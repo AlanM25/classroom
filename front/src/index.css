@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -69,9 +68,8 @@ button:focus-visible {
   }
 }
 
-
-
 body {
   font-family: 'Lato', sans-serif;
-  background-color: #fffbe7;
+  background-color: #fefae0;
 }
+
