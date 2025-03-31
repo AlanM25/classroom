@@ -1,4 +1,5 @@
 import "../../styles/App.css";
+import "../../styles/alumnos.css";
 
 function IndexAlumno() {
   return (

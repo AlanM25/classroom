@@ -1,35 +1,103 @@
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/vite.svg'
-import '../styles/App.css'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/login.css";
 
-function Login() {
-  const [count, setCount] = useState(0)
+
+export default function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Datos a enviar en JSON:", formData);
+    navigate("/maestros");
+
+    /*
+    fetch("http://localhost:3001/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Respuesta del servidor:", data);
+        navigate("/maestros");
+      })
+      .catch((error) => {
+        console.error("Error al conectar con el servidor:", error);
+      });
+    */
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="d-flex flex-column p-0">
+      <div className="flex-fill d-flex align-items-center justify-content-center">
+        <div className="card shadow" style={{ maxWidth: "400px", width: "100%" }}>
+          <div className="card-body p-4">
+            <h2 className="card-title text-center mb-4">Iniciar Sesión</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Correo Electrónico
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="correo@upv.edu.mx"
+                  required
+                />
+              </div>
 
-export default Login
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="......."
+                  required
+                />
+              </div>
+
+              <div className="d-grid gap-2 mb-3">
+                <button type="submit" className="btn btn-primary">
+                  Iniciar Sesión
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  className="btn btn-link p-0"
+                  onClick={() => alert("Funcionalidad de recuperar contraseña")}
+                >
+                  Recuperar contraseña
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
