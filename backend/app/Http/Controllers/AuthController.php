@@ -10,28 +10,29 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only('correo', 'password');
+        $request->validate([
+            'correo' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Credenciales inválidas'], 401);
+        $user = Usuario::where('correo', $request->correo)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Credenciales inválidas'], 401);
         }
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => auth('api')->user()
+            'message' => 'Inicio de sesión exitoso',
+            'token' => $token,
+            'user' => $user
         ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        auth('api')->logout();
-        return response()->json(['message' => 'Sesión cerrada']);
-    }
-
-    public function me()
-    {
-        return response()->json(auth('api')->user());
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Cierre de sesión exitoso']);
     }
 }

@@ -24,3 +24,4 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/clases/{codigo}/avisos', [AvisoController::class, 'store']);
     Route::get('/clases/{codigo}/avisos', [AvisoController::class, 'avisosClase']);
 });
+        
