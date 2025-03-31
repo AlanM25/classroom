@@ -4,7 +4,7 @@ import Topbar from '../../components/Navbars/Topbar';
 import ClaseCard from '../../components/ClaseCard';
 
 
-// 🔁 Simulación temporal
+// QUITAR cuando este el back
 const clasesMock = [
   {
     nombre: 'Fisica II',
