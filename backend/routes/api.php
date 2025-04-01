@@ -24,7 +24,6 @@ Route::middleware('auth:api')->group(function () {
     // Alumno
     Route::prefix('alumno')->group(function () {
         Route::get('/', [ClaseController::class, 'clasesAlumno']);
-        Route::get('/avisos/{clase_id}', [AvisoController::class, 'porClase']);
     });
 
     Route::post('/avisos', [AvisoController::class, 'store']);

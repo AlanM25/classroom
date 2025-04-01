@@ -52,18 +52,22 @@ function InicioAlumno() {
       setUser(JSON.parse(usuarioGuardado));
     }
 
-   // fetchClases();  esto lo descomentan cuando conecten al back
+    fetchClases();  //esto lo descomentan cuando conecten al back
   }, []);
 
   //Recupera la lista de clases
   const fetchClases = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/alumno",{
-        method: "GET"
+      const response = await fetch("http://127.0.0.1:8000/api/alumno/",{
+        method: "GET",
+        headers: 
+          {
+            "Authorization": `Bearer ${token}`, //token de acceso
+          },
       });
 
       if (!response.ok) {
-        throw new Error("Error al obtener las clases");
+        throw new Error(response.status);
       }
 
       const data = await response.json();
