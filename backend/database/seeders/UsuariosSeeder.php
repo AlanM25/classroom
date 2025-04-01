@@ -28,6 +28,15 @@ class UsuariosSeeder extends Seeder
                 'rol' => 'alumno',
                 'foto_perfil' => null,
                 'created_at' => now(), 'updated_at' => now()
+            ],
+            [
+                'nombre' => 'Jonathan',
+                'apellido' => 'Velez',
+                'correo' => 'jonavz@gmail.com',
+                'password' => Hash::make('123456'),
+                'rol' => 'alumno',
+                'foto_perfil' => null,
+                'created_at' => now(), 'updated_at' => now()
             ]
         ]);
     }

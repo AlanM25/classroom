@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import SidebarMaestro from "../../components/SidebarMaestro";
+import Topbar from '../../components/Topbar';
+import './layout.css';
 
 function InicioMaestro() {
   const [mostrarForm, setMostrarForm] = useState(false);
@@ -11,9 +14,14 @@ function InicioMaestro() {
   });
   const [clases, setClases] = useState([]);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null); // foto perfil
 
-  //Para que busque clases al entrar
   useEffect(() => {
+    const usuarioGuardado = localStorage.getItem("user");
+    if (usuarioGuardado) {
+      setUser(JSON.parse(usuarioGuardado));
+    }
+
     fetchClases();
   }, []);
 
@@ -49,7 +57,6 @@ function InicioMaestro() {
       alert("Hubo un error al conectar con el servidor.");
     }
 
-    console.log("Clase creada:", formData);
     setMostrarForm(false);
   };
 
@@ -62,105 +69,112 @@ function InicioMaestro() {
       }
 
       const data = await response.json();
-      setClases(data.length > 0 ? data : null); //Si no hay clases que mejor sea nulo
+      setClases(data.length > 0 ? data : null);
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <>
-      <h1>Inicio</h1>
-      <p>Bienvenido Maestro</p>
+    <div className="main-layout">
+      <SidebarMaestro />
+      <div className="content-layout">
+        <Topbar user={user} />
 
-      <button onClick={() => setMostrarForm(true)}>Crear Nueva Clase</button>
+        <div className="main-panel p-4 rounded-pill">
+          <h1 className="fw-bold">Inicio</h1>
+          <p>Bienvenido Maestro</p>
 
-      {mostrarForm && (
-        <div className="form-container">
-          <h2>Crear Clase</h2>
-          <form onSubmit={handleCreateClass}>
-            <table>
-              <tbody>
-                <tr>
-                  <td>Nombre:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="nombre"
-                      value={formData.nombre}
-                      onChange={handleChangeForm}
-                      required
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Descripción:</td>
-                  <td>
-                    <textarea
-                      name="descripcion"
-                      value={formData.descripcion}
-                      onChange={handleChangeForm}
-                      required
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Cuatrimestre:</td>
-                  <td>
-                    <input
-                      type="number"
-                      name="cuatrimestre"
-                      value={formData.cuatrimestre}
-                      onChange={handleChangeForm}
-                      min="1"
-                      max="10"
-                      required
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Carrera:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="carrera_id"
-                      value={formData.carrera_id}
-                      onChange={handleChangeForm}
-                      required
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <button type="submit">Guardar Clase</button>
-                  </td>
-                  <td>
-                    <button type="button" onClick={() => setMostrarForm(false)}>
-                      Cancelar
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </form>
+          <button onClick={() => setMostrarForm(true)}>Crear Nueva Clase</button>
+
+          {mostrarForm && (
+            <div className="form-container">
+              <h2>Crear Clase</h2>
+              <form onSubmit={handleCreateClass}>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Nombre:</td>
+                      <td>
+                        <input
+                          type="text"
+                          name="nombre"
+                          value={formData.nombre}
+                          onChange={handleChangeForm}
+                          required
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Descripción:</td>
+                      <td>
+                        <textarea
+                          name="descripcion"
+                          value={formData.descripcion}
+                          onChange={handleChangeForm}
+                          required
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cuatrimestre:</td>
+                      <td>
+                        <input
+                          type="number"
+                          name="cuatrimestre"
+                          value={formData.cuatrimestre}
+                          onChange={handleChangeForm}
+                          min="1"
+                          max="10"
+                          required
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Carrera:</td>
+                      <td>
+                        <input
+                          type="text"
+                          name="carrera_id"
+                          value={formData.carrera_id}
+                          onChange={handleChangeForm}
+                          required
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <button type="submit">Guardar Clase</button>
+                      </td>
+                      <td>
+                        <button type="button" onClick={() => setMostrarForm(false)}>
+                          Cancelar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+          )}
+
+          <h2 className="mt-4">Lista de Clases</h2>
+          {error ? (
+            <p className="text-danger">Error: {error}</p>
+          ) : clases === null ? (
+            <p className="text-secondary">Aún no hay clases disponibles.</p>
+          ) : (
+            <ul className="list-unstyled">
+              {clases.map((clase, index) => (
+                <li key={index} className="p-3 mb-2 border rounded shadow bg-white">
+                  <strong>{clase.nombre}</strong> - {clase.horario}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
-
-      <h2>Lista de Clases</h2>
-      {error ? (
-        <p className="text-red-500">Error: {error}</p>
-      ) : clases === null ? (
-        <p className="text-gray-500">Aún no hay clases disponibles.</p>
-      ) : (
-        <ul className="space-y-2">
-          {clases.map((clase, index) => (
-            <li key={index} className="p-3 border rounded-lg shadow bg-white">
-              <strong>{clase.nombre}</strong> - {clase.horario}
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 

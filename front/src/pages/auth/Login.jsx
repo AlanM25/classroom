@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-/* import '../../styles/Login.css'; */
+import './Login.css';
 import loginStudentImg from '../../assets/login_student.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -63,7 +63,7 @@ function Login() {
     } catch (err) {
       setError(err);
       console.error("Error al enviar los datos:", err);
-      alert("Hubo un error al conectar con el servidor.");
+      alert("Datos incorrectos. Intente denuevo");
     }
   };
 

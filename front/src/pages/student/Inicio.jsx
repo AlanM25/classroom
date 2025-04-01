@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
+import SidebarAlumno from "../../components/SidebarAlumno";
+import Topbar from "../../components/Topbar";
+import './layout.css';
+
 
 function InicioAlumno() {
   const [clases, setClases] = useState([]);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null); //foto de perfil
 
-  //Para que busque clases al entrar
   useEffect(() => {
+    const usuarioGuardado = localStorage.getItem("user");
+    if (usuarioGuardado) {
+      setUser(JSON.parse(usuarioGuardado));
+    }
+
     fetchClases();
   }, []);
+
 
   const fetchClases = async () => {
     try {
@@ -23,28 +33,35 @@ function InicioAlumno() {
       setError(err.message);
     }
   };
-
+  
   return (
-    <>
-      <h1>Inicio</h1>
-      <p>Bienvenido Alumno</p>
+    <div className="main-layout">
+      <SidebarAlumno />
+      <div className="content-layout">
+        <Topbar user={user} />
+        <div className="main-panel p-4 rounded-3">
+          <h1 className="fw-bold">Inicio</h1>
+          <p>Bienvenido Alumno</p>
 
-      <h2>Lista de Clases</h2>
-      {error ? (
-        <p className="text-red-500">Error: {error}</p>
-      ) : clases === null ? (
-        <p className="text-gray-500">Aún no hay clases disponibles.</p>
-      ) : (
-        <ul className="space-y-2">
-          {clases.map((clase, index) => (
-            <li key={index} className="p-3 border rounded-lg shadow bg-white">
-              <strong>{clase.nombre}</strong> - {clase.horario}
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
+          <h2 className="mt-4">Lista de Clases</h2>
+          {error ? (
+            <p className="text-danger">Error: {error}</p>
+          ) : clases === null ? (
+            <p className="text-secondary">Aún no hay clases disponibles.</p>
+          ) : (
+            <ul className="list-unstyled">
+              {clases.map((clase, index) => (
+                <li key={index} className="p-3 mb-2 border rounded shadow bg-white">
+                  <strong>{clase.nombre}</strong> - {clase.horario}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
+
 
 export default InicioAlumno;
