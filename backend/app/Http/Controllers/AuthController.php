@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -16,29 +17,36 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $user = Usuario::where('correo', $request->correo)->first();
+        $credentials = $request->only('correo', 'password');
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Credenciales inválidas'], 401);
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Credenciales inválidas'], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'No se pudo crear el token'], 500);
         }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Inicio de sesión exitoso',
             'token' => $token,
-            'user' => $user
+            'user' => auth()->user()
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Cierre de sesión exitoso']);
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json(['message' => 'Sesión cerrada']);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'No se pudo cerrar sesión'], 500);
+        }
     }
 
     public function me()
     {
-        return response()->json(Auth::user());
+        return response()->json(auth()->user());
     }
 }
+
