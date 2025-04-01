@@ -13,7 +13,7 @@ function ClaseMaestro() {
   const [contenido, setContenido] = useState(""); //Contenido del aviso
   const [archivo, setArchivo] = useState(null); //archivo en aviso
   const [user, setUser] = useState(null);//perfil
-
+  const [alumno, setAlumno] = useState(null); //Alumno
 
   //Buscar avisos y perfil según el id
   useEffect(() => {
@@ -86,6 +86,36 @@ function ClaseMaestro() {
     }
   };
 
+  //Añadir un alumno a la clase
+  const handleSubmitAlumno = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("nombre", alumno);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://127.0.0.1:8000/api/maestro/clases/${id_clase}/agregar-alumno`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar alumno");
+      }
+
+      //Actualizar la lista de avisos
+      fetchAvisos();
+      setAlumno("");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="main-layout">
       <div className="sidebar-fixed">
@@ -128,6 +158,26 @@ function ClaseMaestro() {
 
               <button type="submit" className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
                 Agregar aviso
+              </button>
+            </form>
+          </div>
+
+          <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ maxWidth: '600px' }}>
+            <h5 className="fw-bold mb-3">Agregar Alumno a la clase</h5>
+            <form onSubmit={handleSubmitAlumno}>
+              <div className="mb-3">
+                <label className="form-label">Nombre del alumno:</label>
+                <input type="text"
+                  value={alumno}
+                  onChange={(e) => setAlumno(e.target.value)}
+                  className="form-control rounded-3"
+                  placeholder="Ana"
+                  required
+                ></input>
+              </div>
+
+              <button type="submit" className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+                Agregar alumno
               </button>
             </form>
           </div>
