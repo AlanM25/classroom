@@ -90,9 +90,6 @@ function ClaseMaestro() {
   const handleSubmitAlumno = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("nombre", alumno);
-
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/maestro/clases/${id_clase}/agregar-alumno`, {

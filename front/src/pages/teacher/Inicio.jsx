@@ -42,14 +42,13 @@ import './layout.css';
 function InicioMaestro() {
   const [mostrarForm, setMostrarForm] = useState(false);
   //Los datos que ocupa para crear la clase
-  const [formData, setFormData] = useState({
-    nombre: "",
-    descripcion: "",
-    cuatrimestre: "",
-    carrera_id: "",
-    codigo_clase: "",
-  });
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [cuatrimestre, setCuatrimestre] = useState("");
+  const [codigo_clase, setCodigo] = useState("");
+
   const [clases, setClases] = useState([]);
+
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); // foto perfil
   const navigate = useNavigate(); 
@@ -64,17 +63,20 @@ function InicioMaestro() {
    fetchClases();
   }, []);
 
-  const handleChangeForm = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
   //Llama a la api que crea la clase
   const handleCreateClass = async (e) => {
     e.preventDefault();
     setError("");
 
     const token = localStorage.getItem("token");
+
+    const datos = {
+      "nombre":nombre,
+      "descripcion": descripcion,
+      "cuatrimestre": cuatrimestre,
+      "codigo_clase": codigo_clase,
+      "carrera_id": 1
+    }
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
@@ -83,7 +85,7 @@ function InicioMaestro() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: datos,
       });
 
       const respuesta = await response.json();
@@ -152,8 +154,7 @@ function InicioMaestro() {
                   <input
                     type="text"
                     name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChangeForm}
+                    onChange={setNombre}
                     className="form-control rounded-3"
                     placeholder="Ej. Álgebra lineal"
                     required
@@ -164,8 +165,7 @@ function InicioMaestro() {
                   <label className="form-label">Descripción</label>
                   <textarea
                     name="descripcion"
-                    value={formData.descripcion}
-                    onChange={handleChangeForm}
+                    onChange={setDescripcion}
                     className="form-control rounded-3"
                     placeholder="Breve descripción de la clase"
                     rows="3"
@@ -178,8 +178,7 @@ function InicioMaestro() {
                   <input
                     type="number"
                     name="cuatrimestre"
-                    value={formData.cuatrimestre}
-                    onChange={handleChangeForm}
+                    onChange={setCuatrimestre}
                     className="form-control rounded-3"
                     min="1"
                     max="10"
@@ -193,8 +192,7 @@ function InicioMaestro() {
                   <input
                     type="text"
                     name="codigo_clase"
-                    value={formData.codigo_clase}
-                    onChange={handleChangeForm}
+                    onChange={setCodigo}
                     className="form-control rounded-3"
                     placeholder="Ej. 4"
                     required
