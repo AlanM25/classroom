@@ -8,7 +8,7 @@ import './layout.css';
 
 
 //PRUEBA--------------------------------------------------
-const clasesDummy = [
+/* const clasesDummy = [
   {
     id: 1,
     nombre: "Matemáticas I",
@@ -33,7 +33,7 @@ const clasesDummy = [
       foto_perfil: "https://randomuser.me/api/portraits/women/31.jpg",
     },
   },
-];
+]; */
 
 //------------------_BORRAR_-----------------------------------------
 
@@ -61,7 +61,7 @@ function InicioMaestro() {
       setUser(JSON.parse(usuarioGuardado));
     }
 
-   // fetchClases();  esto lo descomentan cuando conecten al back
+   fetchClases();
   }, []);
 
   const handleChangeForm = (e) => {
@@ -74,11 +74,14 @@ function InicioMaestro() {
     e.preventDefault();
     setError("");
 
+    const token = localStorage.getItem("token");
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/clases", {
+      const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -102,9 +105,14 @@ function InicioMaestro() {
 
   //Lista de clases obtenidas
   const fetchClases = async () => {
+    const token = localStorage.getItem("token");
+    
     try {
       const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
-        method: "GET"
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -218,7 +226,7 @@ function InicioMaestro() {
           ) : (
             <div className="d-flex flex-wrap gap-4">
          {/* {clases.map((clase, index) => ( */}
-         {(clases?.length ? clases : clasesDummy).map((clase, index) => (
+         {(clases?.length ? clases : clases).map((clase, index) => (
           <ClaseCard
             key={index}
             nombre={clase.nombre}
