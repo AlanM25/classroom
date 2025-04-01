@@ -12,12 +12,14 @@ class AvisoController extends Controller
     {
         $request->validate([
             'contenido' => 'required|string',
+            'clase_id' => 'required|exists:clases,id',
             'archivos.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
 
         $aviso = Aviso::create([
             'contenido' => $request->contenido,
-            'clase_codigo' => $codigo,
+            'clase_id' => $request->clase_id,
+            'usuario_id' => auth()->id,
             'fecha_creacion' => now(),
         ]);
 
@@ -37,13 +39,8 @@ class AvisoController extends Controller
         return response()->json(['aviso' => $aviso], 201);
     }
 
-    public function avisosClase($codigo)
+    public function porClase($clase_id)
     {
-        $avisos = Aviso::with('archivos')
-            ->where('clase_codigo', $codigo)
-            ->orderBy('fecha_creacion', 'desc')
-            ->get();
-
-        return response()->json($avisos);
+        return Aviso::where('clase_id', $clase_id)->with('archivos')->orderBy('created_at', 'desc')->get();
     }
 }

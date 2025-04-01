@@ -16,28 +16,21 @@ class Clase extends Model
         'cuatrimestre',
         'carrera_id',
         'maestro_id',
-        'fecha_creacion'
+        'codigo_clase',
     ];
 
     public function maestro()
     {
-        return $this->belongsTo(Maestro::class, 'maestro_id');
-    }
-
-    public function carrera()
-    {
-        return $this->belongsTo(Carrera::class, 'carrera_id');
+        return $this->belongsTo(Usuario::class, 'maestro_id');
     }
 
     public function alumnos()
     {
-        return $this->belongsToMany(Alumno::class, 'clases_alumnos', 'clase_codigo', 'alumno_matricula')
-            ->withTimestamps()
-            ->withPivot('fecha_registro');
+        return $this->belongsToMany(Usuario::class, 'clases_alumnos', 'clase_id', 'usuario_id');
     }
 
     public function avisos()
     {
-        return $this->hasMany(Aviso::class, 'clase_codigo');
+        return $this->hasMany(Aviso::class);
     }
 }

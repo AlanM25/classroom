@@ -23,6 +23,16 @@ class Usuario extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
+    public function clasesComoMaestro()
+    {
+        return $this->hasMany(Clase::class, 'maestro_id');
+    }
+
+    public function clasesComoAlumno()
+    {
+        return $this->belongsToMany(Clase::class, 'clases_alumnos', 'usuario_id', 'clase_id');
+    }
+
     // JWT
     public function getJWTIdentifier()
     {

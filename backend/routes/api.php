@@ -13,15 +13,11 @@ Route::middleware('auth:api')->group(function () {
 
     // Clases
     Route::post('/clases', [ClaseController::class, 'store']);
-    Route::get('/alumno/clases', [ClaseController::class, 'clasesAlumno']);
-    Route::get('/maestro/clases', [ClaseController::class, 'clasesMaestro']);
-
-    // Alumnos en clase
-    Route::get('/alumnos/buscar', [AlumnoClaseController::class, 'buscar']);
-    Route::post('/clases/{codigo}/alumnos', [AlumnoClaseController::class, 'agregar']);
+    Route::post('/clases/{clase_id}/agregar-alumno', [ClaseController::class, 'agregarAlumno']);
+    Route::get('/clases-alumno', [ClaseController::class, 'clasesDelAlumno']);
 
     // Avisos
-    Route::post('/clases/{codigo}/avisos', [AvisoController::class, 'store']);
-    Route::get('/clases/{codigo}/avisos', [AvisoController::class, 'avisosClase']);
+    Route::post('/avisos', [AvisoController::class, 'store']);
+    Route::get('/avisos/{clase_id}', [AvisoController::class, 'porClase']);
 });
         

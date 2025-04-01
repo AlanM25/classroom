@@ -11,10 +11,11 @@ class ClaseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required',
-            'descripcion' => 'required',
+            'nombre' => 'required|string',
+            'descripcion' => 'required|string',
             'cuatrimestre' => 'required|integer',
             'carrera_id' => 'required|exists:carreras,id',
+            'codigo_clase' => 'required|unique:clases,codigo_clase',
         ]);
 
         $usuario = auth('api')->user();
@@ -34,16 +35,28 @@ class ClaseController extends Controller
         return response()->json($clase, 201);
     }
 
-    // Ver clases de alumno
+    public function agregarAlumno(Request $request, $clase_id)
+    {
+        $request->validate([
+            'usuario_id' => 'required|exists:usuarios,id'
+        ]);
+
+        $clase = Clase::findOrFail($clase_id);
+        $clase->alumnos()->syncWithoutDetaching([$request->usuario_id]);
+
+        return response()->json(['message' => 'Alumno agregado correctamente']);
+    }
+
+    // Ver clases del alumno
     public function clasesAlumno()
     {
         $usuario = auth('api')->user();
 
-        if ($usuario->rol != 2) {
+        if ($usuario->rol !== 'alumno') {
             return response()->json(['error' => 'Solo los alumnos pueden ver estas clases'], 403);
         }
 
-        $clases = $usuario->alumno->clases()->with('maestro')->get();
+        $clases = $usuario->clasesComoAlumno()->with('maestro')->get();
         return response()->json($clases);
     }
 
@@ -52,11 +65,11 @@ class ClaseController extends Controller
     {
         $usuario = auth('api')->user();
 
-        if ($usuario->rol != 1) {
+        if ($usuario->rol !== 'maestro') {
             return response()->json(['error' => 'Solo los maestros pueden ver sus clases'], 403);
         }
 
-        $clases = $usuario->maestro->clases()->with('carrera')->get();
+        $clases = $usuario->clasesComoMaestro()->with('carrera')->get();
         return response()->json($clases);
     }
 }

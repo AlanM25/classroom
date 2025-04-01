@@ -19,6 +19,6 @@ class Archivo extends Model
 
     public function aviso()
     {
-        return $this->belongsTo(Aviso::class, 'aviso_id');
+        return $this->belongsTo(Aviso::class);
     }
 }
