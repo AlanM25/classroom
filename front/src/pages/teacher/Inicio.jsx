@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 function InicioMaestro() {
   const [mostrarForm, setMostrarForm] = useState(false);
+  //Los datos que ocupa para crear la clase
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -9,8 +10,8 @@ function InicioMaestro() {
     carrera_id: "",
     codigo_clase: "",
   });
-  const [clases, setClases] = useState([]);
-  const [error, setError] = useState(null);
+  const [clases, setClases] = useState([]); //Guardará las clases obtenidas
+  const [error, setError] = useState(null); //Por si no hay clases guarda el error
 
   //Para que busque clases al entrar
   useEffect(() => {
@@ -22,6 +23,7 @@ function InicioMaestro() {
     setFormData({ ...formData, [name]: value });
   };
 
+  //Llama a la api que crea la clase
   const handleCreateClass = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,9 +55,12 @@ function InicioMaestro() {
     setMostrarForm(false);
   };
 
+  //Lista de clases obtenidas
   const fetchClases = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/clases");
+      const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
+        method: "GET"
+      });
 
       if (!response.ok) {
         throw new Error("Error al obtener las clases");

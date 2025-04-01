@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 function InicioAlumno() {
-  const [clases, setClases] = useState([]);
+  const [clases, setClases] = useState([]); //guardar la lista de clases que encuentre
   const [error, setError] = useState(null);
 
   //Para que busque clases al entrar
@@ -9,9 +9,12 @@ function InicioAlumno() {
     fetchClases();
   }, []);
 
+  //Recupera la lista de clases
   const fetchClases = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/clases-alumno");
+      const response = await fetch("http://127.0.0.1:8000/api/alumno",{
+        method: "GET"
+      });
 
       if (!response.ok) {
         throw new Error("Error al obtener las clases");
