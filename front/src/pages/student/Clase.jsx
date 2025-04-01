@@ -15,7 +15,7 @@ function ClaseAlumno() {
 
   const fetchAvisos = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`);
+      const response = await fetch(`http://127.0.0.1:8000/api/alumno/avisos/${id_clase}`);
 
       if (!response.ok) {
         throw new Error("Error al obtener avisos");
