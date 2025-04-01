@@ -6,7 +6,7 @@ import './layout.css';
 
 
 function ClaseAlumno() {
-  const { clase_id } = useParams(); //Agarramos el id
+  const { id_clase } = useParams(); //Agarramos el id
   const [avisos, setAvisos] = useState([]); //Lista de avisos que existen
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); //perfil
@@ -18,14 +18,21 @@ function ClaseAlumno() {
       setUser(JSON.parse(usuarioGuardado));
     }
 
-    if (clase_id) {
+    if (id_clase) {
       fetchAvisos();
     }
-  }, [clase_id]);
+  }, [id_clase]);
 
   const fetchAvisos = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/clases/${clase_id}/avisos`);
+      const response = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`,{
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Error al obtener avisos");
@@ -50,7 +57,7 @@ function ClaseAlumno() {
         </div>
 
         <div className="main-panel p-5">
-          <h1 className="fw-bold">Clase {clase_id}</h1>
+          <h1 className="fw-bold">Clase {id_clase}</h1>
           <p>Vista alumno</p>
 
           <h2 className="mt-4 fw-semibold">Lista de avisos</h2>

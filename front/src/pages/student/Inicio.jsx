@@ -44,6 +44,7 @@ function InicioAlumno() {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); //foto de perfil
   const navigate = useNavigate(); 
+  
 
 
   useEffect(() => {
@@ -57,13 +58,14 @@ function InicioAlumno() {
 
   //Recupera la lista de clases
   const fetchClases = async () => {
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch("http://127.0.0.1:8000/api/alumno/",{
         method: "GET",
-        headers: 
-          {
-            "Authorization": `Bearer ${token}`, //token de acceso
-          },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {

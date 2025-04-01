@@ -89,7 +89,6 @@ function InicioMaestro() {
       const respuesta = await response.json();
 
       if (response.ok) {
-        alert(respuesta.message);
         fetchClases();
       } else {
         alert(`Error: ${respuesta.message}`);
@@ -106,11 +105,11 @@ function InicioMaestro() {
   //Lista de clases obtenidas
   const fetchClases = async () => {
     const token = localStorage.getItem("token");
-    
     try {
       const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
         method: "GET",
         headers: {
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
       });
@@ -190,11 +189,11 @@ function InicioMaestro() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label">ID de carrera</label>
+                  <label className="form-label">Código de clase</label>
                   <input
                     type="text"
-                    name="carrera_id"
-                    value={formData.carrera_id}
+                    name="codigo_clase"
+                    value={formData.codigo_clase}
                     onChange={handleChangeForm}
                     className="form-control rounded-3"
                     placeholder="Ej. 4"

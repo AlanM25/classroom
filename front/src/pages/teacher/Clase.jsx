@@ -30,10 +30,16 @@ function ClaseMaestro() {
 
   //Buscar avisos
   const fetchAvisos = async () => {
+    const token = localStorage.getItem("token");
+
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/avisos/${id_clase}`
-      );
+      const response = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`,{
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Error al obtener avisos");
@@ -53,17 +59,18 @@ function ClaseMaestro() {
     const formData = new FormData();
     formData.append("contenido", contenido); //texto del aviso en el formdata
     if (archivo) {
-      formData.append("archivo", archivo); //archivo si es que hay
+      formData.append("archivos[]", archivo); //archivo si es que hay
     }
     formData.append("clase_id", id_clase);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/avisos`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
       if (!response.ok) {

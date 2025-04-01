@@ -6,6 +6,7 @@ import InicioMaestro from './pages/teacher/Inicio';
 import ClaseAlumno from './pages/student/Clase';
 import ClaseMaestro from './pages/teacher/Clase';
 
+
 function App() {
   return (
     <Router>
