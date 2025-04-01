@@ -160,7 +160,7 @@ function InicioMaestro() {
         <ul className="space-y-2">
           {clases.map((clase, index) => (
             <li key={index} className="p-3 border rounded-lg shadow bg-white">
-              <strong>{clase.nombre}</strong> - {clase.horario}
+              <strong>{clase.nombre}</strong> - {clase.descripcion}
             </li>
           ))}
         </ul>
