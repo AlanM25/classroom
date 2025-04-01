@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { HouseFill, BellFill, CollectionFill } from 'react-bootstrap-icons';
+import { HouseFill, BellFill, JournalBookmarkFill } from 'react-bootstrap-icons';
 
 const SidebarAlumno = () => {
   return (
     <div className="sidebar d-flex flex-column">
-      <h4 className="fw-bold mb-4">UPV</h4>
+      <h4 className="fw-bold mb-3">UPV</h4>
       <NavLink
-        to="/inicio"
+        to="/student/inicio"
         className={({ isActive }) =>
           `mb-3 text-decoration-none fw-semibold d-flex align-items-center ${isActive ? 'text-warning fw-bold' : 'text-dark'}`
         }
@@ -25,12 +25,12 @@ const SidebarAlumno = () => {
       </NavLink>
 
       <NavLink
-        to="/avisos"
+        to="/student/class/:id_clase"
         className={({ isActive }) =>
           `text-decoration-none fw-semibold d-flex align-items-center ${isActive ? 'text-warning fw-bold' : 'text-dark'}`
         }
       >
-        <BellFill className="me-2" /> Avisos
+        <BellFill className="me-2" /> Prueba_Avisos
       </NavLink>
     </div>
   );

@@ -8,7 +8,7 @@ use App\Models\Archivo;
 
 class AvisoController extends Controller
 {
-    public function store(Request $request, $codigo)
+    public function store(Request $request)
     {
         $request->validate([
             'contenido' => 'required|string',
@@ -19,7 +19,7 @@ class AvisoController extends Controller
         $aviso = Aviso::create([
             'contenido' => $request->contenido,
             'clase_id' => $request->clase_id,
-            'usuario_id' => auth()->id,
+            'usuario_id' => auth()->id(),
             'fecha_creacion' => now(),
         ]);
 

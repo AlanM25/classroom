@@ -1,57 +1,76 @@
 body {
-    background-color: #FFF3C4 !important;
-    font-family: 'Lato', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .main-layout {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-    background-color: #FFF3C4;
-  }
-  
-  .content-layout {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: #FFF3C4;
-  }
-  
-  .sidebar {
-    background-color: #FFFAE5;
-    width: 200px;
-    min-height: 100vh;
-    padding: 1.5rem 1rem;
-  }
-  
-  .topbar {
-    background-color: #FFFAE5;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 2rem;
-    border-bottom: 1px solid #e0e0e0;
-    width: 100%;
-  }
-  
-  .profile-pic,
-  .avatar-placeholder {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .avatar-placeholder {
-    background-color: #ed552f;
-  }
-  
-  /* Panel de clases */
-  .main-panel {
-    flex-grow: 1;
-    background-color: #FFF3C4;
-  }
-  
+  background-color: #FFF3C4 !important;
+  font-family: 'Lato', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.main-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #FFF3C4;
+}
+
+.sidebar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 200px;
+  background-color: #FFFAE5;
+  z-index: 1000;
+  padding: 1.5rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidebar h4 {
+  font-weight: 1900;
+  font-size: 25px;
+  letter-spacing: 1px;
+  color: #1a1a1a;
+  text-align: center;
+  margin-top: .0rem;
+  margin-bottom: 1rem;
+}
+
+
+
+.topbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 200px; 
+  width: calc(100% - 200px);
+  background-color: #FFFAE5;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  justify-content: space-between; 
+  height: 60px; 
+}
+
+
+
+
+.profile-pic,
+.avatar-placeholder {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  background-color: #ed552f;
+}
+
+/* Panel de clases */
+.main-panel {
+  margin-top: 60px; 
+  flex-grow: 1;
+  background-color: #FFF3C4;
+}
+

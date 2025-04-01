@@ -31,7 +31,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Lato', sans-serif;
-  background-color: #ffeea8; 
+  background-color: #FFF3C4 !important;
 }
 
 h1 {

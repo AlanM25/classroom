@@ -5,7 +5,7 @@ import { HouseFill, ClipboardCheck, PlusSquare } from 'react-bootstrap-icons';
 const SidebarMaestro = () => {
   return (
     <div className="sidebar d-flex flex-column">
-      <h4 className="fw-bold mb-4">UPV</h4>
+      <h4 className="fw-bold mb-3">UPV</h4>
       
       <NavLink
         to="/teacher/inicio"
@@ -26,12 +26,12 @@ const SidebarMaestro = () => {
       </NavLink>
 
       <NavLink
-        to="/teacher/crear-clase"
+        to="/teacher/class/:id_clase"
         className={({ isActive }) =>
           `text-decoration-none fw-semibold d-flex align-items-center ${isActive ? 'text-warning fw-bold' : 'text-dark'}`
         }
       >
-        <PlusSquare className="me-2" /> Crear clase
+        <PlusSquare className="me-2" /> Prueba_CrearAvisos
       </NavLink>
     </div>
   );

@@ -22,6 +22,7 @@ class Usuario extends Authenticatable implements JWTSubject
     ];
 
     protected $hidden = ['password'];
+    
 
     public function clasesComoMaestro()
     {
