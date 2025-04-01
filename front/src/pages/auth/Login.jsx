@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import '../../styles/Login.css';
+/* import '../../styles/Login.css'; */
 import loginStudentImg from '../../assets/login_student.png';
 import { useNavigate } from 'react-router-dom';
-import { fakeLogin } from '../../mocks/fakeLogin';
+
+/* import { fakeLogin } from '../../mocks/fakeLogin'; */
 
 function Login() {
   const navigate = useNavigate();
@@ -11,26 +12,58 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setError('');
+
+    if(!correo.trim() || !password.trim()){
+      setError("Todos los campos son obligatorios");
+      return;
+    }
+
     try {
-      // Cuando este back reemplazar
-      const response = await fakeLogin(correo, password);
+      const datos = {
+        "correo":correo,
+        "password":password
+      };
 
-      const { user, token } = response;
+      const response = await fetch( //Api para logear
+        "http://127.0.0.1:8000/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        }
+      );
+      /* const response = await fakeLogin(correo, password); */
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      /* const { user, token } = response; */
+      const respuesta = await response.json(); //Lo que retorna la api
 
-      if (user.rol === 1) {
-        navigate('/teacher/inicio'); 
-      } else if (user.rol === 2) {
-        navigate('/student/inicio'); 
+      /* localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user)); */
+
+      if (response.ok) {
+        localStorage.setItem("token", respuesta.token); //El token que ya guardaban
+        localStorage.setItem("user", JSON.stringify(respuesta.user)); //El usuario entero
+        
+        alert(respuesta.message);
+        if (respuesta.user.rol === "maestro") {
+          navigate('/teacher/inicio');
+        } else if (respuesta.user.rol === "alumno") {
+          navigate('/student/inicio'); 
+        } else {
+          setError('Rol no reconocido');
+        }
       } else {
-        setError('Rol no reconocido');
+        alert(`Error: ${respuesta.message}`);
       }
     } catch (err) {
       setError(err);
+      console.error("Error al enviar los datos:", err);
+      alert("Hubo un error al conectar con el servidor.");
     }
   };
 
