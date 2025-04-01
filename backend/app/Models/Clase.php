@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Carrera;
 
 class Clase extends Model
 {
     protected $table = 'clases';
-    protected $primaryKey = 'codigo';
     public $incrementing = true;
 
     protected $fillable = [
@@ -33,4 +33,10 @@ class Clase extends Model
     {
         return $this->hasMany(Aviso::class);
     }
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class);
+    }
+
 }

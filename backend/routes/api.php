@@ -11,13 +11,23 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-    // Clases
-    Route::post('/clases', [ClaseController::class, 'store']);
-    Route::post('/clases/{clase_id}/agregar-alumno', [ClaseController::class, 'agregarAlumno']);
-    Route::get('/clases-alumno', [ClaseController::class, 'clasesDelAlumno']);
+    // Maestro
+    Route::prefix('maestro')->group(function () {
+        Route::get('/clases', [ClaseController::class, 'index']);         // Listar clases
+        Route::post('/clases', [ClaseController::class, 'store']);        // Crear clase
+        Route::get('/clases/{id}', [ClaseController::class, 'show']);     // Ver clase
+        Route::put('/clases/{id}', [ClaseController::class, 'update']);   // Actualizar clase
+        Route::delete('/clases/{id}', [ClaseController::class, 'destroy']); // Eliminar clase
+        Route::post('/clases/{clase_id}/agregar-alumno', [ClaseController::class, 'agregarAlumno']);
+    });
 
-    // Avisos
+    // Alumno
+    Route::prefix('alumno')->group(function () {
+        Route::get('/', [ClaseController::class, 'clasesAlumno']);
+        Route::get('/avisos/{clase_id}', [AvisoController::class, 'porClase']);
+    });
+
     Route::post('/avisos', [AvisoController::class, 'store']);
-    Route::get('/avisos/{clase_id}', [AvisoController::class, 'porClase']);
+    Route::get('/clases/{clase_id}/avisos', [AvisoController::class, 'porClase']);
 });
         
