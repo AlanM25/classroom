@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('apellido');
             $table->string('correo')->unique();
             $table->string('password');
-            $table->enum('rol', ['alumno', 'maestro']); 
+            $table->enum('rol', ['alumno', 'maestro']);
+            $table->foreignId('carrera_id')->constrained('carreras')->onDelete('cascade'); 
             $table->string('foto_perfil')->nullable();
             $table->timestamps();
         });

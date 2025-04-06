@@ -5,40 +5,6 @@ import Topbar from "../../components/Topbar";
 import ClaseCard from "../../components/ClaseCard";
 import './layout.css';
 
-
-
-//PRUEBA--------------------------------------------------
-const clasesDummy = [
-  {
-    id: 1,
-    nombre: "Historia de México",
-    cuatrimestre: 2,
-    descripcion: "Cultura prehispánica y colonial",
-    carrera: { nombre: "Ingeniería Industrial" },
-    maestro: {
-      nombre: "Carlos",
-      apellido: "Ramírez",
-      foto_perfil: "https://randomuser.me/api/portraits/men/21.jpg",
-    },
-  },
-  {
-    id: 2,
-    nombre: "Programación Orientada a Objetos",
-    cuatrimestre: 3,
-    descripcion: "POO con Java",
-    carrera: { nombre: "Ingeniería en Sistemas Computacionales" },
-    maestro: {
-      nombre: "Laura",
-      apellido: "Martínez",
-      foto_perfil: "https://randomuser.me/api/portraits/women/31.jpg",
-    },
-  },
-];
-
-//------------------_BORRAR_-----------------------------------------
-
-
-
 function InicioAlumno() {
   const [clases, setClases] = useState([]); //guardar la lista de clases que encuentre
   const [error, setError] = useState(null);
@@ -53,7 +19,7 @@ function InicioAlumno() {
       setUser(JSON.parse(usuarioGuardado));
     }
 
-    fetchClases();  //esto lo descomentan cuando conecten al back
+    fetchClases(); 
   }, []);
 
   //Recupera la lista de clases
@@ -100,17 +66,20 @@ function InicioAlumno() {
             <p className="text-danger">Error: {error}</p>
           ) : (
             <div className="d-flex flex-wrap gap-4 mt-3">
-              {/* {clases.map((clase, index) => ( */}
-              {(clases.length > 0 ? clases : clasesDummy).map((clase, index) => (
-                <ClaseCard
-                  key={index}
-                  nombre={clase.nombre}
-                  cuatrimestre={clase.cuatrimestre}
-                  carrera={clase?.carrera?.nombre ?? 'Carrera no especificada'}
-                  maestro={clase.maestro}
-                  onClick={() => navigate(`/student/class/${clase.id}`)}
-                />
-              ))}
+              {clases && clases.length > 0 ? (
+                clases.map((clase, index) => (
+                  <ClaseCard
+                    key={index}
+                    nombre={clase.nombre}
+                    cuatrimestre={clase.cuatrimestre}
+                    carrera={clase?.carrera?.nombre ?? 'Carrera no especificada'}
+                    maestro={clase.maestro}
+                    onClick={() => navigate(`/student/class/${clase.id}`)}
+                  />
+                ))
+              ) : (
+                <p className="text-muted">No estás inscrito en ninguna clase aún.</p>
+              )}
             </div>
           )}
         </div>

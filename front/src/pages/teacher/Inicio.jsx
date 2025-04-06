@@ -42,16 +42,14 @@ import './layout.css';
 function InicioMaestro() {
   const [mostrarForm, setMostrarForm] = useState(false);
   //Los datos que ocupa para crear la clase
-  const [formData, setFormData] = useState({
-    nombre: "",
-    descripcion: "",
-    cuatrimestre: "",
-    carrera_id: "",
-    codigo_clase: "",
-  });
+  
   const [clases, setClases] = useState([]);
-  const [error, setError] = useState(null);
-  const [user, setUser] = useState(null); // foto perfil
+  const [nombreClase, setNombreClase] = useState("");
+  const [descripcionClase, setDescripcionClase] = useState("");
+  const [cuatrimestreClase, setCuatrimestreClase] = useState("");
+  const [codigo_clase, setCodigoClase] = useState("");
+  const [error, setError] = useState("");
+  const [user, setUser] = useState(""); // foto perfil
   const navigate = useNavigate(); 
 
 
@@ -59,6 +57,7 @@ function InicioMaestro() {
     const usuarioGuardado = localStorage.getItem("user");
     if (usuarioGuardado) {
       setUser(JSON.parse(usuarioGuardado));
+      console.log(usuarioGuardado);
     }
 
    fetchClases();
@@ -83,7 +82,12 @@ function InicioMaestro() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          nombre: nombreClase,
+          descripcion: descripcionClase,
+          cuatrimestre: cuatrimestreClase,
+          codigo_clase: codigo_clase,
+        }),
       });
 
       const respuesta = await response.json();
@@ -152,8 +156,8 @@ function InicioMaestro() {
                   <input
                     type="text"
                     name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChangeForm}
+                    value={nombreClase}
+                    onChange={(e) => setNombreClase(e.target.value)}
                     className="form-control rounded-3"
                     placeholder="Ej. Álgebra lineal"
                     required
@@ -164,8 +168,8 @@ function InicioMaestro() {
                   <label className="form-label">Descripción</label>
                   <textarea
                     name="descripcion"
-                    value={formData.descripcion}
-                    onChange={handleChangeForm}
+                    value={descripcionClase}
+                    onChange={(e) => setDescripcionClase(e.target.value)}
                     className="form-control rounded-3"
                     placeholder="Breve descripción de la clase"
                     rows="3"
@@ -178,8 +182,8 @@ function InicioMaestro() {
                   <input
                     type="number"
                     name="cuatrimestre"
-                    value={formData.cuatrimestre}
-                    onChange={handleChangeForm}
+                    value={cuatrimestreClase}
+                    onChange={(e) => setCuatrimestreClase(e.target.value)}
                     className="form-control rounded-3"
                     min="1"
                     max="10"
@@ -193,8 +197,8 @@ function InicioMaestro() {
                   <input
                     type="text"
                     name="codigo_clase"
-                    value={formData.codigo_clase}
-                    onChange={handleChangeForm}
+                    value={codigo_clase}
+                    onChange={(e) => setCodigoClase(e.target.value)}
                     className="form-control rounded-3"
                     placeholder="Ej. 4"
                     required

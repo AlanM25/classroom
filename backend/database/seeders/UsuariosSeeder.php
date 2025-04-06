@@ -14,18 +14,30 @@ class UsuariosSeeder extends Seeder
             [
                 'nombre' => 'Juan',
                 'apellido' => 'Pérez',
-                'correo' => 'juan.maestro@example.com',
+                'correo' => 'juan@example.com',
                 'password' => Hash::make('123456'),
                 'rol' => 'maestro',
+                'carrera_id' => 1,
+                'foto_perfil' => null,
+                'created_at' => now(), 'updated_at' => now()
+            ],
+            [
+                'nombre' => 'Julissa',
+                'apellido' => 'Guerrero',
+                'correo' => 'julissa@example.com',
+                'password' => Hash::make('123456'),
+                'rol' => 'maestro',
+                'carrera_id' => 1,
                 'foto_perfil' => null,
                 'created_at' => now(), 'updated_at' => now()
             ],
             [
                 'nombre' => 'Ana',
                 'apellido' => 'Gómez',
-                'correo' => 'ana.alumno@example.com',
+                'correo' => 'ana@example.com',
                 'password' => Hash::make('123456'),
                 'rol' => 'alumno',
+                'carrera_id' => 2,
                 'foto_perfil' => null,
                 'created_at' => now(), 'updated_at' => now()
             ],
@@ -35,6 +47,7 @@ class UsuariosSeeder extends Seeder
                 'correo' => 'jonavz@gmail.com',
                 'password' => Hash::make('123456'),
                 'rol' => 'alumno',
+                'carrera_id' => 1,
                 'foto_perfil' => null,
                 'created_at' => now(), 'updated_at' => now()
             ]

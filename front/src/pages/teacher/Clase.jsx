@@ -142,17 +142,26 @@ function ClaseMaestro() {
               {avisos.map((aviso, index) => (
                 <li key={index} className="p-3 mb-3 border rounded shadow bg-white">
                   <strong>{aviso.contenido}</strong>
-                  {aviso.archivo && (
-                    <p className="mt-2 mb-0">
-                      <a
-                        href={aviso.archivo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary"
-                      >
-                        Ver archivo
-                      </a>
-                    </p>
+
+                  {/* Mostrar archivos si existen */}
+                  {aviso.archivos && aviso.archivos.length > 0 && (
+                    <div className="mt-2">
+                      <p className="fw-bold mb-1">Archivos adjuntos:</p>
+                      <ul>
+                        {aviso.archivos.map((archivo, i) => (
+                          <li key={i}>
+                            <a
+                              href={`http://127.0.0.1:8000/storage/${archivo.nombre_en_storage}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary"
+                            >
+                              {archivo.nombre_original}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </li>
               ))}
