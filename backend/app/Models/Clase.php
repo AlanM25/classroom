@@ -39,4 +39,8 @@ class Clase extends Model
         return $this->belongsTo(Carrera::class);
     }
 
-}
+    public function temas()
+    {
+        return $this->hasMany(Tema::class);
+    }
+}   
