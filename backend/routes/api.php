@@ -4,6 +4,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClaseController;
 use App\Http\Controllers\AlumnoClaseController;
 use App\Http\Controllers\AvisoController;
+use App\Http\Controllers\TemaController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\MaterialController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -28,7 +31,7 @@ Route::middleware('auth:api')->group(function () {
 
         // CRUD de tareas y temas
         Route::post('/temas', [TemaController::class, 'store']);
-        Route::get('/clases/{clase_id}/temas', [TemalaseController::class, 'index']); // Obtener temas de una clase
+        Route::get('/clases/{clase_id}/temas', [TemaController::class, 'index']); // Obtener temas de una clase
         Route::put('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'update']); // Actualizar tema
         Route::delete('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'destroy']); // Eliminar tema
 

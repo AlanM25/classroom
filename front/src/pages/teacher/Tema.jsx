@@ -13,6 +13,7 @@ function TemaMaestro() {
 
   const [temaTitulo, setTemaTitulo] = useState("");
   const [temaDescripcion, setTemaDescripcion] = useState("");
+  const [temas, setTemas] = useState([]);
 
   const [tareaTitulo, setTareaTitulo] = useState("");
   const [tareaInstrucciones, setTareaInstrucciones] = useState("");
@@ -31,6 +32,64 @@ function TemaMaestro() {
     setError(null);
   };
 
+  const fetchTemas = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/clases/${id_clase}/temas`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al obtener avisos");
+      }
+
+      const data = await response.json();
+      setTemas(data.length > 0 ? data : null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleSubmitTema = async (e) => {
+    e.preventDefault();
+    const contenido = {
+      "titulo": temaTitulo,
+      "descripcion": temaDescripcion,
+      "clase_id": 1
+    }
+    console.log(contenido);
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://127.0.0.1:8000/api/maestro/temas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: contenido,
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar el tema");
+      }
+
+      //Actualizar la lista de temas
+      fetchTemas();
+      setTemaTitulo("");
+      setTemaDescripcion("");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const getfecha = () => {
     const now = new Date();
     now.setSeconds(0, 0);
@@ -42,11 +101,6 @@ function TemaMaestro() {
     const minutes = String(now.getMinutes() + 1).padStart(2, "0");
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
-  const handleSubmitTema = (e) => {
-    e.preventDefault();
-    console.log("Tema:", { temaTitulo, temaDescripcion });
   };
 
   const handleSubmitTarea = (e) => {
@@ -300,6 +354,24 @@ function TemaMaestro() {
           )}
 
           {error && <p className="text-danger">{error}</p>}
+        
+        <h2 className="mt-4 fw-semibold">Lista de temas</h2>
+        {error ? (
+          <p className="text-danger">Error: {error}</p>
+        ) : temas === null ? (
+          <p className="text-secondary">Todo limpio por aquí</p>
+        ) : (
+          <ul className="mt-3 list-unstyled">
+            {temas.map((tema, index) => (
+              <li
+                key={index}
+                className="p-3 mb-3 border rounded shadow bg-white"
+              >
+                <strong>{tema.contenido}</strong>
+              </li>
+            ))}
+          </ul>
+        )}
         </div>
       </div>
     </div>
