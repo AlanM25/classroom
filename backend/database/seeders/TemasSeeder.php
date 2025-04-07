@@ -13,7 +13,7 @@ class TemasSeeder extends Seeder
             [
                 'titulo' => 'Introducción a HTML',
                 'descripcion' => 'Estructura básica',
-                'clase_codigo' => 1,
+                'clase_id' => 1,
                 'created_at' => now(), 'updated_at' => now()
             ]
         ]);

@@ -13,7 +13,7 @@ function ClaseMaestro() {
   const [contenido, setContenido] = useState(""); //Contenido del aviso
   const [archivo, setArchivo] = useState(null); //archivo en aviso
   const [user, setUser] = useState(null);//perfil
-  const [alumno, setAlumno] = useState(null); //Alumno
+  const [alumno, setAlumno] = useState(""); //Alumno
 
 
   //Buscar avisos y perfil según el id

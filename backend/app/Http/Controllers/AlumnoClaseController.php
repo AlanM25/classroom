@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Alumno;
+use App\Models\Usuario;
 use App\Models\ClaseAlumno;
 
 class AlumnoClaseController extends Controller
@@ -12,8 +12,7 @@ class AlumnoClaseController extends Controller
     {
         $q = $request->input('q');
 
-        $alumnos = Alumno::where('nombre', 'like', "%$q%")
-            ->orWhere('matricula', 'like', "%$q%")
+        $alumnos = Usuario::where('nombre', 'like', "%$q%")
             ->limit(10)
             ->get();
 
@@ -23,11 +22,11 @@ class AlumnoClaseController extends Controller
     public function agregar(Request $request, $codigo)
     {
         $request->validate([
-            'matricula' => 'required|exists:alumnos,matricula',
+            'usuario_id' => 'required|exists:usuarios,id',
         ]);
 
-        $existe = ClaseAlumno::where('clase_codigo', $codigo)
-            ->where('alumno_matricula', $request->matricula)
+        $existe = ClaseAlumno::where('clase_id', $codigo)
+            ->where('usuario_id', $request->matricula)
             ->first();
 
         if ($existe) {
@@ -35,8 +34,8 @@ class AlumnoClaseController extends Controller
         }
 
         $registro = ClaseAlumno::create([
-            'alumno_matricula' => $request->matricula,
-            'clase_codigo' => $codigo,
+            'usuario_id' => $request->matricula,
+            'clase_id' => $codigo,
             'fecha_registro' => now(),
         ]);
 
