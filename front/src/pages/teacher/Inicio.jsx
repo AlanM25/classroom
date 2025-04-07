@@ -63,17 +63,20 @@ function InicioMaestro() {
    fetchClases();
   }, []);
 
-  const handleChangeForm = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
   //Llama a la api que crea la clase
   const handleCreateClass = async (e) => {
     e.preventDefault();
     setError("");
 
     const token = localStorage.getItem("token");
+
+    const datos = {
+      "nombre":nombre,
+      "descripcion": descripcion,
+      "cuatrimestre": cuatrimestre,
+      "codigo_clase": codigo_clase,
+      "carrera_id": 1
+    }
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {

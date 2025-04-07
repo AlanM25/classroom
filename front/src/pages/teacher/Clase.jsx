@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import SidebarMaestro from "../../components/SidebarMaestro";
-import Topbar from '../../components/Topbar';
-import './layout.css';
-
-
+import Topbar from "../../components/Topbar";
+import "./layout.css";
 
 function ClaseMaestro() {
   const { id_clase } = useParams(); //Agarramos el id
@@ -28,19 +26,21 @@ function ClaseMaestro() {
     }
   }, [id_clase]);
 
-
   //Buscar avisos
   const fetchAvisos = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`,{
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/clases/${id_clase}/avisos`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al obtener avisos");
@@ -69,7 +69,7 @@ function ClaseMaestro() {
       const response = await fetch(`http://127.0.0.1:8000/api/avisos`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -122,16 +122,34 @@ function ClaseMaestro() {
         <SidebarMaestro />
       </div>
 
-      <div style={{ marginLeft: '200px', width: '100%' }}>
+      <div style={{ marginLeft: "200px", width: "100%" }}>
         <div className="topbar-fixed">
           <Topbar user={user} />
         </div>
 
         <div className="main-panel p-5">
+          <div className="d-flex justify-content-start mb-4">
+            <Link
+              to={`/teacher/class/${id_clase}`}
+              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+            >
+              Inicio
+            </Link>
+            <Link
+              to={`/teacher/class/${id_clase}/temas`}
+              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+            >
+              Contenido
+            </Link>
+          </div>
+
           <h1 className="fw-bold">Clase {id_clase}</h1>
           <p>Vista Maestro</p>
 
-          <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ maxWidth: '600px' }}>
+          <div
+            className="bg-white rounded-4 p-4 shadow-sm mb-4"
+            style={{ maxWidth: "600px" }}
+          >
             <h5 className="fw-bold mb-3">Agregar Aviso</h5>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
@@ -147,7 +165,9 @@ function ClaseMaestro() {
               </div>
 
               <div className="mb-4">
-                <label className="form-label">Adjuntar archivo (opcional)</label>
+                <label className="form-label">
+                  Adjuntar archivo (opcional)
+                </label>
                 <input
                   type="file"
                   accept="image/*,application/pdf"
@@ -156,7 +176,10 @@ function ClaseMaestro() {
                 />
               </div>
 
-              <button type="submit" className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+              <button
+                type="submit"
+                className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm"
+              >
                 Agregar aviso
               </button>
             </form>
@@ -190,7 +213,10 @@ function ClaseMaestro() {
           ) : (
             <ul className="list-unstyled mt-3">
               {avisos.map((aviso, index) => (
-                <li key={index} className="p-3 mb-3 border rounded shadow bg-white">
+                <li
+                  key={index}
+                  className="p-3 mb-3 border rounded shadow bg-white"
+                >
                   <strong>{aviso.contenido}</strong>
 
                   {/* Mostrar archivos si existen */}
