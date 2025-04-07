@@ -36,18 +36,18 @@ function TemaMaestro() {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/clases/${id_clase}/temas`,
+        `http://127.0.0.1:8000/api/maestro/clases/${id_clase}/temas`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Error al obtener avisos");
+        throw new Error("Error al obtener temas");
       }
 
       const data = await response.json();
@@ -62,7 +62,7 @@ function TemaMaestro() {
     const contenido = {
       "titulo": temaTitulo,
       "descripcion": temaDescripcion,
-      "clase_id": 1
+      "clase_id": id_clase
     }
     console.log(contenido);
     
@@ -74,7 +74,10 @@ function TemaMaestro() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: contenido,
+        body:
+        JSON.stringify({
+          contenido,
+        }),
       });
 
       if (!response.ok) {
