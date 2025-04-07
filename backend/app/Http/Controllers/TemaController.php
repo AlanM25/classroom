@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Tema;
 use App\Models\Clase;
-use App\Models\ClaseAlumno;
 use Illuminate\Http\Request;
 
 class TemaController extends Controller
@@ -14,6 +13,7 @@ class TemaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string|max:500',
+            'clase_id' => 'required|exists:clases,id',
         ]);
 
         $usuario = auth('api')->user();
@@ -27,7 +27,7 @@ class TemaController extends Controller
         $tema = Tema::create([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
-            'clase_id' => $usuario->clase_id,
+            'clase_id' => $request->clase_id,
         ]);
 
         return response()->json($tema, 201);
