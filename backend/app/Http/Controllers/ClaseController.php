@@ -27,7 +27,6 @@ class ClaseController extends Controller
             'nombre' => 'required|string',
             'descripcion' => 'required|string',
             'cuatrimestre' => 'required|integer',
-            'carrera_id' => 'required|exists:carreras,id',
             'codigo_clase' => 'required|unique:clases,codigo_clase',
         ]);
 
@@ -40,7 +39,7 @@ class ClaseController extends Controller
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'cuatrimestre' => $request->cuatrimestre,
-            'carrera_id' => $request->carrera_id,
+            'carrera_id' => $usuario->carrera_id,
             'codigo_clase' => $request->codigo_clase,
             'maestro_id' => $usuario->id,
             'fecha_creacion' => now(),

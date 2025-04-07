@@ -25,7 +25,7 @@ class AvisoController extends Controller
 
         if ($request->hasFile('archivos')) {
             foreach ($request->file('archivos') as $archivo) {
-                $ruta = $archivo->store('avisos');
+                $ruta = $archivo->store('avisos', 'public');
 
                 Archivo::create([
                     'nombre_original' => $archivo->getClientOriginalName(),
