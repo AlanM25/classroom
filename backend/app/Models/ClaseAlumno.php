@@ -9,18 +9,18 @@ class ClaseAlumno extends Model
     protected $table = 'clases_alumnos';
 
     protected $fillable = [
-        'alumno_matricula',
-        'clase_codigo',
+        'usuario_id',
+        'clase_id',
         'fecha_registro',
     ];
 
     public function alumno()
     {
-        return $this->belongsTo(Alumno::class, 'alumno_matricula', 'matricula');
+        return $this->belongsTo(Usuario::class);
     }
 
     public function clase()
     {
-        return $this->belongsTo(Clase::class, 'clase_codigo', 'codigo');
+        return $this->belongsTo(Usuario::class);
     }
 }

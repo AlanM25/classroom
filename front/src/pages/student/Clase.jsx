@@ -60,16 +60,37 @@ function ClaseAlumno() {
           <h1 className="fw-bold">Clase {id_clase}</h1>
           <p>Vista alumno</p>
 
-          <h2 className="mt-4 fw-semibold">Lista de avisos</h2>
+          <h2 className="fw-semibold mt-4">Lista de avisos</h2>
           {error ? (
             <p className="text-danger">Error: {error}</p>
           ) : avisos === null ? (
             <p className="text-secondary">Todo limpio por aquí</p>
           ) : (
-            <ul className="mt-3 list-unstyled">
+            <ul className="list-unstyled mt-3">
               {avisos.map((aviso, index) => (
                 <li key={index} className="p-3 mb-3 border rounded shadow bg-white">
                   <strong>{aviso.contenido}</strong>
+
+                  {/* Mostrar archivos si existen */}
+                  {aviso.archivos && aviso.archivos.length > 0 && (
+                    <div className="mt-2">
+                      <p className="fw-bold mb-1">Archivos adjuntos:</p>
+                      <ul>
+                        {aviso.archivos.map((archivo, i) => (
+                          <li key={i}>
+                            <a
+                              href={`http://127.0.0.1:8000/storage/${archivo.nombre_en_storage}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary"
+                            >
+                              {archivo.nombre_original}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

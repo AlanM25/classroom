@@ -30,7 +30,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/alumnos/buscar', [AlumnoClaseController::class, 'buscar']); // Buscar alumnos
 
         // CRUD de tareas y temas
-        Route::post('/temas', [TemaController::class, 'store']);
+        Route::post('/temas', [TemaController::class, 'store']); //crear tema
         Route::get('/clases/{clase_id}/temas', [TemaController::class, 'index']); // Obtener temas de una clase
         Route::put('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'update']); // Actualizar tema
         Route::delete('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'destroy']); // Eliminar tema
