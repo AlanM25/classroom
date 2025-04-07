@@ -41,6 +41,6 @@ class AvisoController extends Controller
 
     public function porClase($clase_id)
     {
-        return Aviso::where('clase_id', $clase_id)->with('archivos')->orderBy('created_at', 'desc')->get();
+        return Aviso::where('clase_id', $clase_id)->with('archivos', 'usuario')->orderBy('created_at', 'desc')->get();
     }
 }

@@ -57,10 +57,7 @@ function InicioAlumno() {
         </div>
 
         <div className="main-panel p-5">
-          <h1 className="fw-bold">Inicio</h1>
-          <p>Bienvenido Alumno</p>
-
-          <h2 className="mt-4 fw-semibold">Lista de Clases</h2>
+          <h1 className="fw-bolder mb-5">Inicio</h1>
 
           {error ? (
             <p className="text-danger">Error: {error}</p>

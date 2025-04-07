@@ -52,9 +52,6 @@ body {
   height: 60px; 
 }
 
-
-
-
 .profile-pic,
 .avatar-placeholder {
   width: 45px;
@@ -65,6 +62,13 @@ body {
 
 .avatar-placeholder {
   background-color: #ed552f;
+}
+
+.clase-avatar {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* Panel de clases */
