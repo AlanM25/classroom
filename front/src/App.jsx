@@ -5,6 +5,7 @@ import InicioAlumno from './pages/student/Inicio';
 import InicioMaestro from './pages/teacher/Inicio';
 import ClaseAlumno from './pages/student/Clase';
 import ClaseMaestro from './pages/teacher/Clase';
+import TemaMaestro from './pages/teacher/Tema';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/student/class/:id_clase" element={<ClaseAlumno />} />
         <Route path="/teacher/inicio" element={<InicioMaestro />} />
         <Route path="/teacher/class/:id_clase" element={<ClaseMaestro />} />
+        <Route path="/teacher/class/:id_clase/temas" element={<TemaMaestro />} />
       </Routes>
     </Router>
   );
