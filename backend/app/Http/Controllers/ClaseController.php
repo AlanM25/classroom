@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Clase;
+use App\Models\Usuario;
 
 class ClaseController extends Controller
 {
@@ -95,12 +96,18 @@ class ClaseController extends Controller
     public function agregarAlumno(Request $request, $clase_id)
     {
         $request->validate([
-            'usuario_id' => 'required|exists:usuarios,id'
+            'nombre' => 'required|string'
         ]);
-
+    
+        $usuario = Usuario::where('nombre', $request->nombre)->first();
+    
+        if (!$usuario) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+    
         $clase = Clase::findOrFail($clase_id);
-        $clase->alumnos()->syncWithoutDetaching([$request->usuario_id]);
-
+        $clase->alumnos()->syncWithoutDetaching([$usuario->id]);
+    
         return response()->json(['message' => 'Alumno agregado correctamente']);
     }
 

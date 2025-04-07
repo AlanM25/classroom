@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tareas', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
-            $table->string('instrucciones');
+            $table->text('instrucciones');
             $table->dateTime('fecha_creacion')->default(now());
             $table->dateTime('fecha_limite');
             $table->foreignId('tema_id')->constrained('temas')->onDelete('cascade');
