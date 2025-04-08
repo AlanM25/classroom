@@ -16,11 +16,11 @@ class ClaseAlumno extends Model
 
     public function alumno()
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
     public function clase()
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(Clase::class, 'clase_id');
     }
 }
