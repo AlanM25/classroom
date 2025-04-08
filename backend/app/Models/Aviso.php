@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\Usuario;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,5 +21,10 @@ class Aviso extends Model
     public function archivos()
     {
         return $this->hasMany(Archivo::class);
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 }

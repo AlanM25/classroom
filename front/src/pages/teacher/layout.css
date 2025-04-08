@@ -1,4 +1,5 @@
-body {
+
+/*body {
     background-color: #FFF3C4 !important;
     font-family: 'Lato', sans-serif;
     margin: 0;
@@ -67,7 +68,7 @@ body {
     background-color: #ed552f;
   }
   
-  /* Panel de clases */
+   //Panel de clases 
   .main-panel {
     margin-top: 60px; 
     flex-grow: 1;
@@ -75,7 +76,6 @@ body {
   }
   
   
-  /* Tarjeta de clases */
   
   .clase-card {
     width: 280px;
@@ -92,3 +92,7 @@ body {
     border-radius: 50%;
     object-fit: cover;
   }
+
+
+  
+  */

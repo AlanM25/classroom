@@ -22,7 +22,7 @@ class Usuario extends Authenticatable implements JWTSubject
     ];
 
     protected $hidden = ['password'];
-    
+
 
     public function clasesComoMaestro()
     {
@@ -44,4 +44,9 @@ class Usuario extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function usuario()
+{
+    return $this->belongsTo(Usuario::class, 'usuario_id');
+}
 }
