@@ -18,6 +18,7 @@ class UsuariosSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'rol' => 'maestro',
                 'carrera_id' => 1,
+                'matricula' => null,
                 'foto_perfil' => null,
                 'created_at' => now(), 'updated_at' => now()
             ],
@@ -29,6 +30,7 @@ class UsuariosSeeder extends Seeder
                 'rol' => 'maestro',
                 'carrera_id' => 1,
                 'foto_perfil' => null,
+                'matricula' => null,
                 'created_at' => now(), 'updated_at' => now()
             ],
             [
@@ -39,6 +41,7 @@ class UsuariosSeeder extends Seeder
                 'rol' => 'alumno',
                 'carrera_id' => 2,
                 'foto_perfil' => null,
+                'matricula' => '2230001',
                 'created_at' => now(), 'updated_at' => now()
             ],
             [
@@ -49,6 +52,7 @@ class UsuariosSeeder extends Seeder
                 'rol' => 'alumno',
                 'carrera_id' => 1,
                 'foto_perfil' => null,
+                'matricula' => '2230002',
                 'created_at' => now(), 'updated_at' => now()
             ]
         ]);
