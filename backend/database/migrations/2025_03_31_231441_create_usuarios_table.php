@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('rol', ['alumno', 'maestro']);
             $table->foreignId('carrera_id')->constrained('carreras')->onDelete('cascade'); 
             $table->string('foto_perfil')->nullable();
+            $table->string('matricula')->unique()->nullable();
             $table->timestamps();
         });
     }
