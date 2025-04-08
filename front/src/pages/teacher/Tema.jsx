@@ -21,11 +21,17 @@ function TemaMaestro() {
   const [tareaFecha, setTareaFecha] = useState("");
   const [tareaCalificacion, setTareaCalificacion] = useState("");
   const [tareaArchivo, setTareaArchivo] = useState(null);
+  const [tareasTemas, setTareasTemas] = useState([]);
 
   const [materialTitulo, setMaterialTitulo] = useState("");
   const [materialDescripcion, setMaterialDescripcion] = useState("");
   const [materialTema, setMaterialTema] = useState("");
   const [materialArchivo, setMaterialArchivo] = useState(null);
+  const [materialesTemas, setMaterialesTemas] = useState([]);
+
+  useEffect(() => {
+    fetchTemas();
+  }, []);
 
   const handleSeleccion = (opcionSeleccionada) => {
     setOpcion(opcionSeleccionada);
@@ -41,7 +47,7 @@ function TemaMaestro() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -52,20 +58,88 @@ function TemaMaestro() {
 
       const data = await response.json();
       setTemas(data.length > 0 ? data : null);
+
+      if (data.length > 0) {
+        const allTareas = [];
+        for (let tema of data) {
+          const tareas = await fetchTareas(tema.id);
+          allTareas.push(...tareas);
+        }
+        setTareasTemas(allTareas);
+
+        const allMateriales = [];
+        for (let tema of data) {
+          const materiales = await fetchMateriales(tema.id);
+          allMateriales.push(...materiales);
+        }
+        setMaterialesTemas(allMateriales);
+      }
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const fetchTareas = async (tema_id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/maestro/clases/temas/${tema_id}/tareas`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al obtener temas");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return [];
+    }
+  };
+
+  const fetchMateriales = async (tema_id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/maestro/temas/${tema_id}/materiales`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al obtener temas");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return [];
     }
   };
 
   const handleSubmitTema = async (e) => {
     e.preventDefault();
     const contenido = {
-      "titulo": temaTitulo,
-      "descripcion": temaDescripcion,
-      "clase_id": id_clase
-    }
+      titulo: temaTitulo,
+      descripcion: temaDescripcion,
+      clase_id: id_clase,
+    };
     console.log(contenido);
-    
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/maestro/temas`, {
@@ -74,20 +148,101 @@ function TemaMaestro() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body:
-        JSON.stringify({
-          contenido,
-        }),
+        body: JSON.stringify(contenido),
       });
 
       if (!response.ok) {
         throw new Error("Error al agregar el tema");
+      } else {
+        //Actualizar la lista de temas
+        alert("Tema creado con exito");
+        fetchTemas();
+        setTemaTitulo("");
+        setTemaDescripcion("");
+        setOpcion("");
       }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-      //Actualizar la lista de temas
-      fetchTemas();
-      setTemaTitulo("");
-      setTemaDescripcion("");
+  const handleSubmitTarea = async (e) => {
+    e.preventDefault();
+    const contenido = {
+      titulo: tareaTitulo,
+      instrucciones: tareaInstrucciones,
+      fecha_limite: tareaFecha,
+      tema_id: tareaTema,
+      archivo: tareaArchivo,
+      clase_id: id_clase,
+    };
+    console.log(contenido);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://127.0.0.1:8000/api/maestro/tareas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(contenido),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar el tema");
+      } else {
+        //Actualizar la lista de tareas
+        alert("Tarea creada con exito");
+        fetchTemas();
+        setTareaArchivo("");
+        setTareaCalificacion("");
+        setTareaFecha("");
+        setTareaInstrucciones("");
+        setTareaTema("");
+        setTareaTitulo("");
+        setOpcion("");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleSubmitMaterial = async (e) => {
+    e.preventDefault();
+    const contenido = {
+      titulo: materialTitulo,
+      descripcion: materialDescripcion,
+      tema_id: materialTema,
+    };
+    console.log(contenido);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/maestro/materiales`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(contenido),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al agregar el material");
+      } else {
+        //Actualizar la lista de materiales
+        alert("Material creado con exito");
+        setMaterialTitulo("");
+        setMaterialDescripcion("");
+        setMaterialTema("");
+        setMaterialArchivo("");
+        setOpcion("");
+        fetchTemas();
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -100,32 +255,8 @@ function TemaMaestro() {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes() + 1).padStart(2, "0");
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
-  const handleSubmitTarea = (e) => {
-    e.preventDefault();
-    console.log("Tarea:", {
-      tareaTitulo,
-      tareaInstrucciones,
-      tareaTema,
-      tareaFecha,
-      tareaCalificacion,
-      tareaArchivo,
-    });
-  };
-
-  const handleSubmitMaterial = (e) => {
-    e.preventDefault();
-    console.log("Material:", {
-      materialTitulo,
-      materialDescripcion,
-      materialTema,
-      materialArchivo,
-    });
+    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -251,18 +382,23 @@ function TemaMaestro() {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Tema relacionado</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tareaTema}
-                    onChange={(e) => setTareaTema(e.target.value)}
+                  <select
+                    className="bg-white text-dark"
                     required
-                  />
+                    onChange={(e) => setTareaTema(e.target.value)}
+                  >
+                    <option value="">Selecciona un tema</option>
+                    {temas.map((tema) => (
+                      <option key={tema.id} value={tema.id}>
+                        {tema.titulo}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Fecha de entrega</label>
                   <input
-                    type="datetime-local"
+                    type="date"
                     className="form-control"
                     value={tareaFecha}
                     onChange={(e) => setTareaFecha(e.target.value)}
@@ -330,13 +466,18 @@ function TemaMaestro() {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Tema relacionado</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={materialTema}
-                    onChange={(e) => setMaterialTema(e.target.value)}
+                  <select
+                    className="bg-white text-dark"
                     required
-                  />
+                    onChange={(e) => setMaterialTema(e.target.value)}
+                  >
+                    <option value="">Selecciona un tema</option>
+                    {temas.map((tema) => (
+                      <option key={tema.id} value={tema.id}>
+                        {tema.titulo}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Subir archivo</label>
@@ -357,24 +498,56 @@ function TemaMaestro() {
           )}
 
           {error && <p className="text-danger">{error}</p>}
-        
-        <h2 className="mt-4 fw-semibold">Lista de temas</h2>
-        {error ? (
-          <p className="text-danger">Error: {error}</p>
-        ) : temas === null ? (
-          <p className="text-secondary">Todo limpio por aquí</p>
-        ) : (
-          <ul className="mt-3 list-unstyled">
-            {temas.map((tema, index) => (
-              <li
-                key={index}
-                className="p-3 mb-3 border rounded shadow bg-white"
-              >
-                <strong>{tema.contenido}</strong>
-              </li>
-            ))}
-          </ul>
-        )}
+
+          <h2 className="mt-4 fw-semibold">Lista de temas</h2>
+          {!Array.isArray(temas) || temas.length === 0 ? (
+            <p className="text-secondary">Todo limpio por aquí</p>
+          ) : (
+            <ul className="mt-3 list-unstyled">
+              {temas.map((tema, index) => (
+                <li
+                  key={index}
+                  className="p-3 mb-3 border rounded shadow bg-white"
+                >
+                  <h1>
+                    <strong>{tema.titulo}</strong>
+                  </h1>
+                  <h4>{tema.descripcion}</h4>
+
+                  <h5>Tareas:</h5>
+                  <hr />
+                    <ul>
+                      {tareasTemas
+                        .filter((tarea) => tarea.tema_id === tema.id)
+                        .map((tarea, tareaIndex) => (
+                          <li key={tareaIndex}>
+                            <strong>{tarea.titulo}</strong>:{" "}
+                            {tarea.instrucciones}
+                            <br />
+                            Fecha de límite:{" "}
+                            {new Date(tarea.fecha_limite).toLocaleString()}
+                            <hr />
+                          </li>
+                        ))}
+                    </ul>
+
+                  <h5>Materiales:</h5>
+                  <hr />
+                  <ul>
+                    {materialesTemas
+                      .filter((material) => material.tema_id === tema.id)
+                      .map((material, materialIndex) => (
+                        <li key={materialIndex}>
+                          <strong>{material.titulo}</strong>:{" "}
+                          {material.descripcion}
+                          <hr />
+                        </li>
+                      ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
