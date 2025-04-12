@@ -295,8 +295,6 @@ function TemaMaestro() {
     fetchEntregas(tareaSeleccionada); 
   };
   
-  
-
   const getfecha = () => {
     const now = new Date();
     now.setSeconds(0, 0);
@@ -555,21 +553,6 @@ function TemaMaestro() {
           <p className="text-secondary">Todo limpio por aquí</p>
         ) : (
           <ul className="mt-3 list-unstyled">
-            {temas.map((tema, index) => (
-              <li
-                key={index}
-                className="p-3 mb-3 border rounded shadow bg-white"
-              >
-                <strong>{tema.contenido}</strong>
-              </li>
-            ))}
-          </ul>
-        )}
-        <h2 className="mt-4 fw-semibold">Tareas creadas</h2>
-        {!Array.isArray(temas) || temas.length === 0 ? (
-            <p className="text-secondary">Todo limpio por aquí</p>
-          ) : (
-            <ul className="mt-3 list-unstyled">
               {temas.map((tema, index) => (
                 <li
                   key={index}
@@ -582,20 +565,30 @@ function TemaMaestro() {
 
                   <h5>Tareas:</h5>
                   <hr />
-                    <ul>
-                      {tareasTemas
-                        .filter((tarea) => tarea.tema_id === tema.id)
-                        .map((tarea, tareaIndex) => (
-                          <li key={tareaIndex}>
-                            <strong>{tarea.titulo}</strong>:{" "}
-                            {tarea.instrucciones}
-                            <br />
-                            Fecha de límite:{" "}
-                            {new Date(tarea.fecha_limite).toLocaleString()}
-                            <hr />
-                          </li>
-                        ))}
-                    </ul>
+                  <ul className="list-unstyled">
+                    {tareasTemas
+                      .filter((tarea) => tarea.tema_id === tema.id)
+                      .map((tarea, tareaIndex) => (
+                        <li key={tareaIndex}>
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div>
+                              <strong>{tarea.titulo}</strong>: {tarea.instrucciones}
+                              <br />
+                              Fecha de límite:{" "}
+                              {new Date(tarea.fecha_limite).toLocaleString()}
+                            </div>
+
+                            <button
+                              onClick={() => fetchEntregas(tarea.id)}
+                              className="btn btn-sm btn-outline-success ms-4"
+                            >
+                              Ver entregas
+                            </button>
+                          </div>
+                          <hr />
+                        </li>
+                      ))}
+                  </ul>
 
                   <h5>Materiales:</h5>
                   <hr />
@@ -613,13 +606,13 @@ function TemaMaestro() {
                 </li>
               ))}
             </ul>
-          )}
+        )}
           {entregas.length > 0 && (
             <div className="bg-light p-4 rounded shadow-sm">
               <h4>Entregas de la tarea #{tareaSeleccionada}</h4>
               {entregas.map((e) => (
                 <div key={e.id} className="border-bottom py-2">
-                  <p><strong>Alumno:</strong> {e.clase_alumno?.usuario?.nombre ?? "Sin nombre"}</p>
+                  <p><strong>Alumno:</strong> {e.clase_alumno?.alumno?.nombre ?? "Sin nombre"}</p>
                   <p><strong>Estado:</strong> {e.estado}</p>
                   <p><strong>Fecha de entrega:</strong> {e.fecha_entrega}</p>
                   {e.archivos && e.archivos.length > 0 && (

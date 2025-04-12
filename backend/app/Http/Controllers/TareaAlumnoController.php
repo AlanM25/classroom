@@ -11,7 +11,7 @@ class TareaAlumnoController extends Controller
     // Mostrar entregas por tarea
     public function entregasPorTarea($tarea_id)
     {
-        $entregas = TareaAlumno::with(['claseAlumno.usuario', 'archivos'])
+        $entregas = TareaAlumno::with(['claseAlumno.alumno', 'archivos'])
             ->where('tarea_id', $tarea_id)
             ->get();
 

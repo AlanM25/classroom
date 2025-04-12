@@ -16,14 +16,14 @@ class TareaAlumno extends Model
         'estado',
     ];
 
-    public function tarea()
-    {
-        return $this->belongsTo(Tarea::class, 'tarea_id');
-    }
-
     public function claseAlumno()
     {
         return $this->belongsTo(ClaseAlumno::class, 'alumno_clase');
+    }
+
+    public function tarea()
+    {
+        return $this->belongsTo(Tarea::class);
     }
 
     public function archivos()

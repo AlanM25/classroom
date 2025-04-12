@@ -23,4 +23,9 @@ class ClaseAlumno extends Model
     {
         return $this->belongsTo(Clase::class, 'clase_id');
     }
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 }
