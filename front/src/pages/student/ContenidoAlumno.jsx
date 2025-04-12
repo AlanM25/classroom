@@ -5,7 +5,7 @@ const ContenidoAlumno = ({ id_clase }) => {
   const [temas, setTemas] = useState([]);
 
   useEffect(() => {
-    // Simulación de datos hasta que conectes el backend
+    // ----qqq
     const mockTemas = [
       {
         titulo: "Introducción a React",
@@ -41,7 +41,7 @@ const ContenidoAlumno = ({ id_clase }) => {
         <p className="text-secondary">Aún no hay temas asignados.</p>
       ) : (
         temas.map((tema, index) => (
-          <div key={index} className="bg-white rounded p-4 mb-4 shadow-sm">
+          <div key={index} className="bg-warning-subtle rounded p-4 mb-4 shadow-sm">
             <h5 className="fw-bold mb-2">
               <Book className="me-2 text-warning" />
               {tema.titulo}

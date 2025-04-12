@@ -31,7 +31,7 @@ const SidebarMaestro = () => {
           `text-decoration-none fw-semibold d-flex align-items-center ${isActive ? 'text-warning fw-bold' : 'text-dark'}`
         }
       >
-        <PlusSquare className="me-2" /> Prueba_CrearAvisos
+        <PlusSquare className="me-2" /> Pendiente...
       </NavLink>
     </div>
   );
