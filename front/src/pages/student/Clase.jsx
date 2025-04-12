@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import SidebarAlumno from "../../components/SidebarAlumno";
 import Topbar from "../../components/Topbar";
+import AvisosAlumno from "./AvisosAlumnos";
 import ContenidoAlumno from "./ContenidoAlumno";
 import './layout.css';
 
 function ClaseAlumno() {
   const { id_clase } = useParams();
   const [avisos, setAvisos] = useState([]);
+  const [temas, setTemas] = useState([]);
+  const [materiales, setMateriales] = useState([]);
+  const [tareas, setTareas] = useState([]);
   const [clases, setClases] = useState([]);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
@@ -21,6 +25,7 @@ function ClaseAlumno() {
 
     if (id_clase) {
       fetchAvisos();
+      fetchTemas();
     }
 
     fetchClases();
@@ -29,23 +34,80 @@ function ClaseAlumno() {
   const fetchAvisos = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`, {
-        method: "GET",
+      const res = await fetch(`http://127.0.0.1:8000/api/clases/${id_clase}/avisos`, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) throw new Error("Error al obtener avisos");
-
-      const data = await response.json();
-      setAvisos(data.length > 0 ? data.reverse() : null);
+      if (!res.ok) throw new Error("Error al obtener avisos");
+      const data = await res.json();
+      setAvisos(data.length > 0 ? data.reverse() : []);
     } catch (err) {
       setError(err.message);
     }
   };
 
+  const fetchTemas = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/temas/${id_clase}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) throw new Error("No se pudieron obtener los temas");
+  
+      const data = await response.json();
+      setTemas(data.length > 0 ? data : []);
+      fetchMaterialesYtareas(data);  // 
+    } catch (err) {
+      console.error("Error al obtener temas:", err);
+      setError("Error al obtener temas");
+    }
+  };
+  
+
+  const fetchMaterialesYtareas = async (temas) => {
+    const token = localStorage.getItem("token");
+    const materialesCompletos = [];
+    const tareasCompletas = [];
+  
+    for (const tema of temas) {
+      // Fetch materiales
+      const resMat = await fetch(`http://127.0.0.1:8000/api/materiales/${tema.id}`, {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      if (resMat.ok) {
+        const dataMat = await resMat.json();
+        materialesCompletos.push(...dataMat.map(m => ({
+          ...m,
+          profesor: "Profesor", // provisional
+          fecha: m.fecha_creacion ?? m.created_at,
+          tipo: "material"
+        })));
+      }
+  
+      // Fetch tareas
+      const resTar = await fetch(`http://127.0.0.1:8000/api/tareas/${tema.id}`, {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      if (resTar.ok) {
+        const dataTar = await resTar.json();
+        tareasCompletas.push(...dataTar.map(t => ({
+          ...t,
+          profesor: "Profesor", // provisional
+          fecha: t.fecha_creacion ?? t.created_at,
+          tipo: "tarea"
+        })));
+      }
+    }
+  
+    setMateriales(materialesCompletos);
+    setTareas(tareasCompletos);
+  };
   const fetchClases = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -58,7 +120,6 @@ function ClaseAlumno() {
       });
 
       if (!response.ok) throw new Error(response.status);
-
       const data = await response.json();
       setClases(data.length > 0 ? data : []);
     } catch (err) {
@@ -98,67 +159,17 @@ function ClaseAlumno() {
             </button>
           </div>
 
-          {/* Contenido dinámico */}
           {activeTab === "avisos" && (
             <>
               <h4 className="mt-3 fw-semibold">Lista de avisos</h4>
               {error ? (
                 <p className="text-danger">Error: {error}</p>
-              ) : avisos === null ? (
-                <p className="text-secondary">Todo limpio por aquí</p>
               ) : (
-                <ul className="mt-3 list-unstyled">
-                  {avisos.map((aviso, index) => {
-                    const usuario = aviso.usuario ?? {};
-                    const nombreProfesor = `${usuario.nombre ?? 'Profesor'} ${usuario.apellido ?? ''}`;
-                    const fecha = aviso.created_at
-                      ? new Date(aviso.created_at).toLocaleDateString("es-MX", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })
-                      : "Sin fecha";
-
-                    const tieneMaterial = aviso.archivos && aviso.archivos.length > 0;
-                    const archivo = tieneMaterial ? aviso.archivos[0] : null;
-
-                    return (
-                      <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
-                        <div className="d-flex align-items-center mb-2">
-                          <img
-                            src={usuario.foto_perfil ?? "https://picsum.photos/40"}
-                            alt="Perfil"
-                            className="rounded-circle me-3"
-                            style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                          />
-                          <div>
-                            <strong>{nombreProfesor}</strong><br />
-                            <small>{fecha}</small>
-                          </div>
-                        </div>
-
-                        {tieneMaterial ? (
-                          <>
-                            <p>
-                              El profesor <strong>{nombreProfesor}</strong> ha subido un nuevo material:{" "}
-                              <strong className="text-primary">{archivo.nombre_original}</strong>
-                            </p>
-                            <a
-                              href={`http://127.0.0.1:8000/storage/${archivo.nombre_en_storage}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-outline-dark btn-sm"
-                            >
-                              Ver material
-                            </a>
-                          </>
-                        ) : (
-                          <p className="mb-0">{aviso.contenido}</p>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <AvisosAlumno
+                  avisos={avisos}
+                  materiales={materiales}
+                  tareas={tareas}
+                />
               )}
             </>
           )}

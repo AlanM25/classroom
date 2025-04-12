@@ -11,7 +11,13 @@ class ClasesAlumnosSeeder extends Seeder
     {
         DB::table('clases_alumnos')->insert([
             [
-                'usuario_id' => 2,
+                'usuario_id' => 3,
+                'clase_id' => 1,
+                'fecha_registro' => now(),
+                'created_at' => now(), 'updated_at' => now()
+            ],
+            [
+                'usuario_id' => 4,
                 'clase_id' => 1,
                 'fecha_registro' => now(),
                 'created_at' => now(), 'updated_at' => now()

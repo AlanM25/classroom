@@ -30,7 +30,7 @@ const SidebarAlumno = () => {
           `text-decoration-none fw-semibold d-flex align-items-center ${isActive ? 'text-warning fw-bold' : 'text-dark'}`
         }
       >
-        <BellFill className="me-2" /> Prueba_Avisos
+        <BellFill className="me-2" /> Avisos
       </NavLink>
     </div>
   );

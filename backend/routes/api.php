@@ -39,7 +39,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::post('/tareas', [TareaController::class, 'store']); // Crear tarea
         Route::get('/clases/temas/{tema_id}/tareas', [TareaController::class, 'index']); // Obtener tareas de una clase
-        
+
         // CRUD de materiales
         Route::post('/materiales', [MaterialController::class, 'store']);
         Route::get('/temas/{tema_id}/materiales', [MaterialController::class, 'index']);
@@ -57,5 +57,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/avisos', [AvisoController::class, 'store']);
     Route::get('/clases/{clase_id}/avisos', [AvisoController::class, 'porClase']);
+    Route::get('/temas/{clase_id}', [TemaController::class, 'index']);
+
 });
-        
