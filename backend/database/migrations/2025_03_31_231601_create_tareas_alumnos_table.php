@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('tarea_id')->constrained('tareas')->onDelete('cascade');
             $table->integer('calificacion')->nullable();
             $table->dateTime('fecha_entrega')->nullable();
-            $table->tinyInteger('estado'); // 0: Pendiente, 1: Entregado, 2: Calificado
+            $table->enum('estado', ['entregado', 'calificado', 'pendiente'])->default('pendiente');
             $table->timestamps();
         });
     }

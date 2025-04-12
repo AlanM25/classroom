@@ -27,6 +27,20 @@ function TemaMaestro() {
   const [materialTema, setMaterialTema] = useState("");
   const [materialArchivo, setMaterialArchivo] = useState(null);
 
+  const [tareas, setTareas] = useState([]);
+  const [entregas, setEntregas] = useState([]);
+  const [tareaSeleccionada, setTareaSeleccionada] = useState("");
+
+  useEffect(() => {
+    fetchTemas();
+  }, []);
+  
+  useEffect(() => {
+    if (temas && temas.length > 0) {
+      fetchTareas();
+    }
+  }, [temas]);
+
   const handleSeleccion = (opcionSeleccionada) => {
     setOpcion(opcionSeleccionada);
     setError(null);
@@ -54,6 +68,22 @@ function TemaMaestro() {
       setTemas(data.length > 0 ? data : null);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const fetchTareas = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/maestro/clases/temas/${temas[0]?.id}/tareas`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      setTareas(data);
+    } catch (error) {
+      console.error("Error al obtener tareas:", error);
     }
   };
 
@@ -92,6 +122,41 @@ function TemaMaestro() {
       setError(err.message);
     }
   };
+
+  const fetchEntregas = async (tareaId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/maestro/tareas/${tareaId}/entregas`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setEntregas(data);
+      setTareaSeleccionada(tareaId);
+    } catch (err) {
+      console.error("Error al obtener entregas:", err);
+    }
+  };
+  
+  const enviarCalificacion = async (entregaId, nota) => {
+    const token = localStorage.getItem("token");
+  
+    await fetch(`http://127.0.0.1:8000/api/maestro/tareas-alumnos/${entregaId}/calificar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ calificacion: parseInt(nota) }),
+    });
+  
+    fetchEntregas(tareaSeleccionada); 
+  };
+  
+  
 
   const getfecha = () => {
     const now = new Date();
@@ -375,6 +440,64 @@ function TemaMaestro() {
             ))}
           </ul>
         )}
+        <h2 className="mt-4 fw-semibold">Tareas creadas</h2>
+          <ul className="list-group mb-4">
+            {tareas.map((t) => (
+              <li key={t.id} className="list-group-item d-flex justify-content-between align-items-center">
+                {t.titulo}
+                <button
+                  onClick={() => fetchEntregas(t.id)}
+                  className="btn btn-sm btn-outline-success"
+                >
+                  Ver entregas
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {entregas.length > 0 && (
+            <div className="bg-light p-4 rounded shadow-sm">
+              <h4>Entregas de la tarea #{tareaSeleccionada}</h4>
+              {entregas.map((e) => (
+                <div key={e.id} className="border-bottom py-2">
+                  <p><strong>Alumno:</strong> {e.clase_alumno?.usuario?.nombre ?? "Sin nombre"}</p>
+                  <p><strong>Estado:</strong> {e.estado}</p>
+                  <p><strong>Fecha de entrega:</strong> {e.fecha_entrega}</p>
+                  {e.archivos && e.archivos.length > 0 && (
+                    <div>
+                      <strong>Archivos:</strong>
+                      <ul>
+                        {e.archivos.map((a) => (
+                          <li key={a.id}>
+                            <a
+                              href={`http://127.0.0.1:8000/storage/${a.nombre_en_storage}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {a.nombre_original}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="mt-2">
+                    <input
+                      type="number"
+                      placeholder="Calificación"
+                      min="0"
+                      max="100"
+                      defaultValue={e.calificacion ?? ""}
+                      className="form-control w-25 d-inline"
+                      onBlur={(ev) =>
+                        enviarCalificacion(e.id, ev.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

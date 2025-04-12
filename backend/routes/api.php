@@ -7,6 +7,8 @@ use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\TemaController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\TareaAlumnoController;
+
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -41,11 +43,16 @@ Route::middleware('auth:api')->group(function () {
         // CRUD de materiales
         Route::post('/materiales', [MaterialController::class, 'store']);
         Route::get('/temas/{tema_id}/materiales', [MaterialController::class, 'index']);
+
+        // Calificar tareas
+        Route::post('/tareas-alumnos/{id}/calificar', [TareaAlumnoController::class, 'calificar']);
+        Route::get('/tareas/{id}/entregas', [TareaAlumnoController::class, 'entregasPorTarea']);
     });
 
     // Alumno
     Route::prefix('alumno')->group(function () {
         Route::get('/', [ClaseController::class, 'clasesAlumno']);
+        Route::post('/tareas/{id}/entregar', [TareaAlumnoController::class, 'entregar']);
     });
 
     Route::post('/avisos', [AvisoController::class, 'store']);
