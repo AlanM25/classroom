@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import SidebarMaestro from "../../components/SidebarMaestro";
 import Topbar from "../../components/Topbar";
 import "./layout.css";
 
 function TemaMaestro() {
   const { id_clase } = useParams();
+  const navigate = useNavigate(); 
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -578,8 +580,13 @@ function TemaMaestro() {
                               {new Date(tarea.fecha_limite).toLocaleString()}
                             </div>
 
-                            <button
-                              onClick={() => fetchEntregas(tarea.id)}
+                            <button                        
+                              onClick={() => {
+                                  localStorage.setItem("tarea", JSON.stringify(tarea));
+                                  navigate(`/teacher/class/${id_clase}/${tarea.id}/instrucciones`);
+                                }
+                              } 
+                              /* onClick={() => fetchEntregas(tarea.id)} */
                               className="btn btn-sm btn-outline-success ms-4"
                             >
                               Ver entregas
@@ -607,49 +614,6 @@ function TemaMaestro() {
               ))}
             </ul>
         )}
-          {entregas.length > 0 && (
-            <div className="bg-light p-4 rounded shadow-sm">
-              <h4>Entregas de la tarea #{tareaSeleccionada}</h4>
-              {entregas.map((e) => (
-                <div key={e.id} className="border-bottom py-2">
-                  <p><strong>Alumno:</strong> {e.clase_alumno?.alumno?.nombre ?? "Sin nombre"}</p>
-                  <p><strong>Estado:</strong> {e.estado}</p>
-                  <p><strong>Fecha de entrega:</strong> {e.fecha_entrega}</p>
-                  {e.archivos && e.archivos.length > 0 && (
-                    <div>
-                      <strong>Archivos:</strong>
-                      <ul>
-                        {e.archivos.map((a) => (
-                          <li key={a.id}>
-                            <a
-                              href={`http://127.0.0.1:8000/storage/${a.nombre_en_storage}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {a.nombre_original}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      placeholder="Calificación"
-                      min="0"
-                      max="100"
-                      defaultValue={e.calificacion ?? ""}
-                      className="form-control w-25 d-inline"
-                      onBlur={(ev) =>
-                        enviarCalificacion(e.id, ev.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
