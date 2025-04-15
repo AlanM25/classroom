@@ -43,9 +43,36 @@ function TareaMaestro() {
             </Link>
           </div>
 
-          <h1 className="fw-bold">{tarea.titulo}</h1>
-          <p>{tarea.instrucciones}</p>
-          <div>
+          <div className="bg-white rounded-4 p-4 shadow-sm mb-4 w-100">
+            <div className="d-flex justify-content-between">
+              <div>
+                <h1 className="fw-bold">{tarea.titulo}</h1>
+              </div>
+              <div className="d-flex align-items-center">
+                <p>
+                  <b>Fecha de entrega: </b> {tarea.fecha_limite}
+                </p>
+              </div>
+            </div>
+            <p>{tarea.instrucciones}</p>
+            {tarea.archivos && tarea.archivos.length > 0 && (
+              <div>
+                <strong>Archivos:</strong>
+                <ul>
+                  {tarea.archivos.map((a) => (
+                    <li key={a.id}>
+                      <a
+                        href={`http://127.0.0.1:8000/storage/${a.nombre_en_storage}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {a.nombre_original}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

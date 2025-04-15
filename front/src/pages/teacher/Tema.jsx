@@ -263,39 +263,6 @@ function TemaMaestro() {
       setError(err.message);
     }
   };
-
-  const fetchEntregas = async (tareaId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/maestro/tareas/${tareaId}/entregas`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      setEntregas(data);
-      setTareaSeleccionada(tareaId);
-    } catch (err) {
-      console.error("Error al obtener entregas:", err);
-    }
-  };
-  
-  const enviarCalificacion = async (entregaId, nota) => {
-    const token = localStorage.getItem("token");
-  
-    await fetch(`http://127.0.0.1:8000/api/maestro/tareas-alumnos/${entregaId}/calificar`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ calificacion: parseInt(nota) }),
-    });
-  
-    fetchEntregas(tareaSeleccionada); 
-  };
   
   const getfecha = () => {
     const now = new Date();
