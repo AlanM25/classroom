@@ -21,4 +21,11 @@ class Archivo extends Model
     {
         return $this->belongsTo(Aviso::class);
     }
+
+    public function tareaAlumno()
+    {
+        return $this->belongsTo(TareaAlumno::class, 'tareas_alumno_id');
+    }
+
+
 }

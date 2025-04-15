@@ -98,16 +98,16 @@ class ClaseController extends Controller
         $request->validate([
             'nombre' => 'required|string'
         ]);
-    
+
         $usuario = Usuario::where('nombre', $request->nombre)->first();
-    
+
         if (!$usuario) {
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
-    
+
         $clase = Clase::findOrFail($clase_id);
         $clase->alumnos()->syncWithoutDetaching([$usuario->id]);
-    
+
         return response()->json(['message' => 'Alumno agregado correctamente']);
     }
 
@@ -123,4 +123,19 @@ class ClaseController extends Controller
         $clases = $usuario->clasesComoAlumno()->with('maestro')->get();
         return response()->json($clases);
     }
+
+
+    public function alumnosDeClase($id)
+{
+    $clase = Clase::with('alumnos')->findOrFail($id);
+    return response()->json($clase->alumnos);
+}
+
+
+
+
+
+
+
+
 }

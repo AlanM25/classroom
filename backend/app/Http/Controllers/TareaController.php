@@ -11,6 +11,27 @@ use Illuminate\Support\Facades\Storage;
 
 class TareaController extends Controller
 {
+
+
+    public function show($id)
+    {
+        $tarea = Tarea::with(['archivos', 'tema.clase.maestro'])->findOrFail($id);
+
+        return response()->json([
+            'id' => $tarea->id,
+            'titulo' => $tarea->titulo,
+            'instrucciones' => $tarea->instrucciones,
+            'fecha_limite' => $tarea->fecha_limite,
+            'fecha_creacion' => $tarea->fecha_creacion,
+            'archivos' => $tarea->archivos,
+            'tema' => $tarea->tema,
+            'clase' => $tarea->tema->clase,
+            'profesor' => $tarea->tema->clase->maestro->nombre ?? 'Profesor',
+        ]);
+    }
+
+
+
     public function store(Request $request)
     {
         $request->validate([

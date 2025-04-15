@@ -4,6 +4,9 @@ import Login from './pages/auth/Login';
 import InicioAlumno from './pages/student/Inicio';
 import InicioMaestro from './pages/teacher/Inicio';
 import ClaseAlumno from './pages/student/Clase';
+import MaterialAlumno from "./pages/student/MaterialAlumno";
+import TareaAlumno from "./pages/student/TareaAlumno";
+
 import ClaseMaestro from './pages/teacher/Clase';
 import TemaMaestro from './pages/teacher/Tema';
 import TareaMaestro from './pages/teacher/Tarea';
@@ -18,6 +21,11 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/student/inicio" element={<InicioAlumno />} />
         <Route path="/student/class/:id_clase" element={<ClaseAlumno />} />
+        <Route path="/alumno/class/:id_clase/material/:id_material" element={<MaterialAlumno />} />
+        <Route path="/alumno/class/:id_clase/tarea/:id_tarea" element={<TareaAlumno />} />
+        
+
+        
         <Route path="/teacher/inicio" element={<InicioMaestro />} />
         <Route path="/teacher/class/:id_clase" element={<ClaseMaestro />} />
         <Route path="/teacher/class/:id_clase/temas" element={<TemaMaestro />} />

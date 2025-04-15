@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\TareaAlumno;
 use App\Models\Tarea;
 use Illuminate\Http\Request;
+use App\Models\Archivo;
+
 
 class TareaAlumnoController extends Controller
 {
@@ -57,10 +59,10 @@ class TareaAlumnoController extends Controller
             ]
         );
 
-        // Guardar archivo relacionado (en tabla archivos si la tienes)
+        // Subir archivo y registrar
         $path = $request->file('file')->store('entregas', 'public');
 
-        \DB::table('archivos')->insert([
+        Archivo::create([
             'tarea_id' => $tarea_id,
             'tareas_alumno_id' => $entrega->id,
             'nombre_original' => $request->file('file')->getClientOriginalName(),
@@ -68,6 +70,10 @@ class TareaAlumnoController extends Controller
             'fecha_creacion' => now(),
         ]);
 
-        return response()->json(['message' => 'Tarea entregada correctamente']);
+        return response()->json([
+            'message' => 'Tarea entregada correctamente.',
+            'entrega' => $entrega
+        ]);
     }
+
 }

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { BookFill, ClipboardCheckFill } from "react-bootstrap-icons";
 
 function AvisosAlumno() {
   const { id_clase } = useParams();
+  const navigate = useNavigate();
 
   const [avisos, setAvisos] = useState([]);
   const [materiales, setMateriales] = useState([]);
@@ -32,7 +33,6 @@ function AvisosAlumno() {
     try {
       const token = localStorage.getItem("token");
 
-      // Obtener temas de la clase
       const temasRes = await fetch(`http://127.0.0.1:8000/api/temas/${id_clase}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -54,19 +54,8 @@ function AvisosAlumno() {
         const mats = await resMat.json();
         const tars = await resTar.json();
 
-        allMateriales.push(
-          ...mats.map((m) => ({
-            ...m,
-            profesor: tema.clase?.maestro?.nombre ?? "Profesor",
-          }))
-        );
-
-        allTareas.push(
-          ...tars.map((t) => ({
-            ...t,
-            profesor: tema.clase?.maestro?.nombre ?? "Profesor",
-          }))
-        );
+        allMateriales.push(...mats.map(m => ({ ...m, profesor: tema.clase?.maestro?.nombre ?? 'Profesor' })));
+        allTareas.push(...tars.map(t => ({ ...t, profesor: tema.clase?.maestro?.nombre ?? 'Profesor' })));
       }
 
       setMateriales(allMateriales);
@@ -77,7 +66,7 @@ function AvisosAlumno() {
   };
 
   const listaCompleta = [
-    ...avisos.map((av) => ({
+    ...avisos.map(av => ({
       tipo: "aviso",
       id: av.id,
       contenido: av.contenido,
@@ -86,7 +75,7 @@ function AvisosAlumno() {
       archivos: av.archivos ?? [],
       foto_perfil: av.usuario?.foto_perfil,
     })),
-    ...materiales.map((mat) => ({
+    ...materiales.map(mat => ({
       tipo: "material",
       id: mat.id,
       titulo: mat.titulo,
@@ -95,16 +84,15 @@ function AvisosAlumno() {
       fecha: mat.fecha_creacion,
       profesor: mat.profesor ?? "Profesor",
     })),
-    ...tareas.map((tar) => ({
+    ...tareas.map(tar => ({
       tipo: "tarea",
       id: tar.id,
       titulo: tar.titulo,
       instrucciones: tar.instrucciones,
       fecha: tar.fecha_creacion,
       profesor: tar.profesor ?? "Profesor",
-    })),
+    }))
   ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
 
   return (
     <ul className="mt-3 list-unstyled">
@@ -117,7 +105,7 @@ function AvisosAlumno() {
             })
           : "Sin fecha";
 
-        // Aviso
+        // Avisos
         if (item.tipo === "aviso") {
           return (
             <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
@@ -135,7 +123,6 @@ function AvisosAlumno() {
               </div>
               <p className="mb-2">{item.contenido}</p>
 
-              {/* Archivos */}
               {item.archivos.map((archivo, i) => {
                 const url = `http://127.0.0.1:8000/storage/${archivo.nombre_en_storage}`;
                 const esPDF = archivo.nombre_original.toLowerCase().endsWith(".pdf");
@@ -157,7 +144,7 @@ function AvisosAlumno() {
         // Material
         if (item.tipo === "material") {
           return (
-            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
+            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-light">
               <div className="d-flex align-items-center mb-2">
                 <BookFill className="me-2" size={24} />
                 <div>
@@ -169,7 +156,12 @@ function AvisosAlumno() {
                 El profesor <strong>{item.profesor}</strong> ha subido un nuevo material:{" "}
                 <strong className="text-primary">{item.titulo}</strong>
               </p>
-              <a href="#" className="btn btn-outline-primary btn-sm">Ver material</a>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => navigate(`/alumno/class/${id_clase}/material/${item.id}`, { state: { material: item } })}
+              >
+                Ver material
+              </button>
             </li>
           );
         }
@@ -177,7 +169,7 @@ function AvisosAlumno() {
         // Tarea
         if (item.tipo === "tarea") {
           return (
-            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
+            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-light">
               <div className="d-flex align-items-center mb-2">
                 <ClipboardCheckFill className="me-2" size={24} />
                 <div>
@@ -189,7 +181,12 @@ function AvisosAlumno() {
                 El profesor <strong>{item.profesor}</strong> ha publicado una nueva tarea:{" "}
                 <strong className="text-primary">{item.titulo}</strong>
               </p>
-              <a href="#" className="btn btn-outline-primary btn-sm">Ver tarea</a>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => navigate(`/alumno/class/${id_clase}/tarea/${item.id}`, { state: { tarea: item } })}
+              >
+                Ver tarea
+              </button>
             </li>
           );
         }
