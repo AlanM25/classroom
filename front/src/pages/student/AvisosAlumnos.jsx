@@ -144,7 +144,7 @@ function AvisosAlumno() {
         // Material
         if (item.tipo === "material") {
           return (
-            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-light">
+            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
               <div className="d-flex align-items-center mb-2">
                 <BookFill className="me-2" size={24} />
                 <div>
@@ -169,7 +169,7 @@ function AvisosAlumno() {
         // Tarea
         if (item.tipo === "tarea") {
           return (
-            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-light">
+            <li key={index} className="p-3 mb-3 border rounded shadow-sm bg-warning-subtle">
               <div className="d-flex align-items-center mb-2">
                 <ClipboardCheckFill className="me-2" size={24} />
                 <div>

@@ -1,39 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { Book, ClipboardCheck, FileText } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
 
 const ContenidoAlumno = ({ id_clase }) => {
   const [temas, setTemas] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // ----qqq
-    const mockTemas = [
-      {
-        titulo: "Introducción a React",
-        descripcion: "Conceptos básicos, JSX, componentes.",
-        materiales: [
-          {
-            nombre: "Guía de React",
-            url: "#",
-            tipo: "pdf",
-          },
-        ],
-        tareas: [
-          {
-            titulo: "Tarea 1: Hola Mundo",
-            fecha_entrega: "2025-04-15",
-          },
-        ],
-      },
-      {
-        titulo: "Hooks y Estado",
-        descripcion: "useState, useEffect y custom hooks.",
-        materiales: [],
-        tareas: [],
-      },
-    ];
-
-    setTemas(mockTemas);
+    fetchTemasYContenido();
   }, [id_clase]);
+
+  const fetchTemasYContenido = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const resTemas = await fetch(`http://127.0.0.1:8000/api/temas/${id_clase}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const temas = await resTemas.json();
+      const temasConContenido = await Promise.all(
+        temas.map(async (tema) => {
+          const [matRes, tarRes] = await Promise.all([
+            fetch(`http://127.0.0.1:8000/api/maestro/temas/${tema.id}/materiales`, {
+              headers: { Authorization: `Bearer ${token}` }
+            }),
+            fetch(`http://127.0.0.1:8000/api/maestro/clases/temas/${tema.id}/tareas`, {
+              headers: { Authorization: `Bearer ${token}` }
+            })
+          ]);
+
+          const materiales = matRes.ok ? await matRes.json() : [];
+          const tareas = tarRes.ok ? await tarRes.json() : [];
+
+          return {
+            ...tema,
+            materiales,
+            tareas,
+          };
+        })
+      );
+
+      setTemas(temasConContenido);
+    } catch (error) {
+      console.error("Error al cargar contenido:", error);
+    }
+  };
 
   return (
     <div className="mt-4">
@@ -55,16 +66,18 @@ const ContenidoAlumno = ({ id_clase }) => {
                   Materiales
                 </h6>
                 <ul className="list-unstyled">
-                  {tema.materiales.map((material, i) => (
-                    <li key={i}>
-                      <a
-                        href={material.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="link-primary text-decoration-none"
+                  {tema.materiales.map((material) => (
+                    <li key={material.id}>
+                      <button
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() =>
+                          navigate(`/alumno/class/${id_clase}/material/${material.id}`, {
+                            state: { material }
+                          })
+                        }
                       >
-                        {material.nombre}
-                      </a>
+                        {material.titulo}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -78,9 +91,21 @@ const ContenidoAlumno = ({ id_clase }) => {
                   Tareas
                 </h6>
                 <ul className="list-unstyled">
-                  {tema.tareas.map((tarea, i) => (
-                    <li key={i}>
-                      {tarea.titulo} — <small className="text-muted">Entrega: {tarea.fecha_entrega}</small>
+                  {tema.tareas.map((tarea) => (
+                    <li key={tarea.id}>
+                      <button
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() =>
+                          navigate(`/alumno/class/${id_clase}/tarea/${tarea.id}`, {
+                            state: { tarea }
+                          })
+                        }
+                      >
+                        {tarea.titulo}
+                      </button>
+                      <span className="text-muted ms-2">
+                        (Entrega: {new Date(tarea.fecha_limite).toLocaleDateString("es-MX")})
+                      </span>
                     </li>
                   ))}
                 </ul>

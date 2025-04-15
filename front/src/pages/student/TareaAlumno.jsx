@@ -76,7 +76,7 @@ function TareaAlumno() {
     const alumnoClaseId = localStorage.getItem("alumno_clase_id");
 
     if (!archivo || !alumnoClaseId) {
-      alert("⚠️ Debes seleccionar un archivo y tener un ID válido.");
+      alert("debes seleccionar un archivo y tener un ID válido.");
       return;
     }
 
@@ -98,11 +98,11 @@ function TareaAlumno() {
         return;
       }
 
-      alert("✅ Tarea entregada correctamente.");
+      alert(" Tarea entregada correctamente.");
       setStatus("Entregado");
     } catch (err) {
       console.error("Error al entregar:", err);
-      alert("❌ No se pudo entregar la tarea.");
+      alert("No se pudo entregar la tarea.");
     }
   };
 

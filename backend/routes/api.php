@@ -62,7 +62,6 @@ Route::middleware('auth:api')->group(function () {
     //Tareas
     Route::get('/tareas/show/{id}', [TareaController::class, 'show']);
     Route::get('/clases/{id}/alumnos', [ClaseController::class, 'alumnosDeClase']);
-    Route::post('/alumno/tareas/{id}/entregar', [TareaAlumnoController::class, 'entregar']);
 
 
 
