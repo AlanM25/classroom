@@ -31,13 +31,13 @@ function TareaMaestro() {
           <div className="d-flex justify-content-start mb-4">
             <Link
               to={`/teacher/class/${id_clase}/${id_tarea}/instrucciones`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-warning me-2 rounded-pill fw-bold"
             >
               Instrucciones
             </Link>
             <Link
               to={`/teacher/class/${id_clase}/${id_tarea}/revisiones`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-outline-warning me-2 rounded-pill fw-bold"
             >
               Trabajo de los alumnos
             </Link>

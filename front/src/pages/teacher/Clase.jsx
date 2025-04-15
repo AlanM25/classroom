@@ -10,9 +10,11 @@ function ClaseMaestro() {
   const [error, setError] = useState(null);
   const [contenido, setContenido] = useState(""); //Contenido del aviso
   const [archivo, setArchivo] = useState(null); //archivo en aviso
-  const [user, setUser] = useState(null);//perfil
+  const [user, setUser] = useState(null); //perfil
   const [alumno, setAlumno] = useState(""); //Alumno
+  const [clase, setClase] = useState(""); //La clase
 
+  const [opcion, setOpcion] = useState(""); //Para que no quede el formulario ahí
 
   //Buscar avisos y perfil según el id
   useEffect(() => {
@@ -21,10 +23,18 @@ function ClaseMaestro() {
       setUser(JSON.parse(usuarioGuardado));
     }
 
+    const claseEntera = JSON.parse(localStorage.getItem("clase"));
+    setClase(claseEntera);
+
     if (id_clase) {
       fetchAvisos();
     }
   }, [id_clase]);
+
+  const handleSeleccion = (opcionSeleccionada) => {
+    setOpcion(opcionSeleccionada);
+    setError(null);
+  };
 
   //Buscar avisos
   const fetchAvisos = async () => {
@@ -87,22 +97,25 @@ function ClaseMaestro() {
     }
   };
 
-   //Añadir un alumno a la clase
-   const handleSubmitAlumno = async (e) => {
+  //Añadir un alumno a la clase
+  const handleSubmitAlumno = async (e) => {
     e.preventDefault();
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/maestro/clases/${id_clase}/agregar-alumno`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nombre: alumno,
-        }),
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/maestro/clases/${id_clase}/agregar-alumno`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            nombre: alumno,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al agregar alumno");
@@ -131,79 +144,112 @@ function ClaseMaestro() {
           <div className="d-flex justify-content-start mb-4">
             <Link
               to={`/teacher/class/${id_clase}`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-warning me-2 rounded-pill fw-semibold"
             >
               Inicio
             </Link>
             <Link
               to={`/teacher/class/${id_clase}/temas`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-outline-warning me-2 rounded-pill fw-semibold"
             >
               Contenido
             </Link>
           </div>
+          <h1 className="fw-bold">{clase.nombre}</h1>
+          <h4>{clase.descripcion}</h4>
+          <p className="fw-semibold">Cuatrimestre: {clase.cuatrimestre}°</p>
 
-          <h1 className="fw-bold">Clase {id_clase}</h1>
-          <p>Vista Maestro</p>
-
-          <div
-            className="bg-white rounded-4 p-4 shadow-sm mb-4"
-            style={{ maxWidth: "600px" }}
-          >
-            <h5 className="fw-bold mb-3">Agregar Aviso</h5>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Contenido</label>
-                <textarea
-                  value={contenido}
-                  onChange={(e) => setContenido(e.target.value)}
-                  className="form-control rounded-3"
-                  placeholder="Escribe un aviso..."
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="mb-4">
-                <label className="form-label">
-                  Adjuntar archivo (opcional)
-                </label>
-                <input
-                  type="file"
-                  accept="image/*,application/pdf"
-                  onChange={(e) => setArchivo(e.target.files[0])}
-                  className="form-control"
-                />
-              </div>
-
+          <div className="mb-4">
+            <div className="btn-group">
               <button
-                type="submit"
-                className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm"
+                onClick={() => handleSeleccion("aviso")}
+                className="btn btn-warning fw-bold m-1 rounded"
               >
                 Agregar aviso
               </button>
-            </form>
-          </div>
-
-          <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ maxWidth: '600px' }}>
-            <h5 className="fw-bold mb-3">Agregar Alumno a la clase</h5>
-            <form onSubmit={handleSubmitAlumno}>
-              <div className="mb-3">
-                <label className="form-label">Nombre del alumno:</label>
-                <input type="text"
-                  value={alumno}
-                  onChange={(e) => setAlumno(e.target.value)}
-                  className="form-control rounded-3"
-                  placeholder="Ana"
-                  required
-                ></input>
-              </div>
-
-              <button type="submit" className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+              <button
+                onClick={() => handleSeleccion("alumno")}
+                className="btn btn-warning fw-bold m-1 rounded"
+              >
                 Agregar alumno
               </button>
-            </form>
+            </div>
           </div>
+
+          {opcion === "aviso" && (
+            <div className="bg-white rounded-4 p-4 shadow-sm mb-4 w-50">
+              <button
+                onClick={() => setOpcion("")}
+                className="btn-close"
+                aria-label="Cerrar"
+              ></button>
+
+              <h5 className="fw-bold mb-3">Agregar Aviso</h5>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Contenido</label>
+                  <textarea
+                    value={contenido}
+                    onChange={(e) => setContenido(e.target.value)}
+                    className="form-control rounded-3"
+                    placeholder="Escribe un aviso..."
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label">
+                    Adjuntar archivo (opcional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => setArchivo(e.target.files[0])}
+                    className="form-control"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm"
+                >
+                  Agregar aviso
+                </button>
+              </form>
+            </div>
+          )}
+
+          {opcion === "alumno" && (
+            <div className="bg-white rounded-4 p-4 shadow-sm mb-4 w-50">
+              <button
+                onClick={() => setOpcion("")}
+                className="btn-close"
+                aria-label="Cerrar"
+              ></button>
+              <h5 className="fw-bold mb-3">Agregar Alumno a la clase</h5>
+              <form onSubmit={handleSubmitAlumno}>
+                <div className="mb-3">
+                  <label className="form-label">Nombre del alumno:</label>
+                  <input
+                    type="text"
+                    value={alumno}
+                    onChange={(e) => setAlumno(e.target.value)}
+                    className="form-control rounded-3"
+                    placeholder="Ana"
+                    required
+                  ></input>
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm"
+                >
+                  Agregar alumno
+                </button>
+              </form>
+            </div>
+          )}
 
           <h2 className="fw-semibold mt-4">Lista de avisos</h2>
           {error ? (

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import SidebarMaestro from "../../components/SidebarMaestro";
 import Topbar from "../../components/Topbar";
 import "./layout.css";
 
 function TemaMaestro() {
   const { id_clase } = useParams();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -21,7 +21,6 @@ function TemaMaestro() {
   const [tareaInstrucciones, setTareaInstrucciones] = useState("");
   const [tareaTema, setTareaTema] = useState("");
   const [tareaFecha, setTareaFecha] = useState("");
-  const [tareaCalificacion, setTareaCalificacion] = useState("");
   const [tareaArchivo, setTareaArchivo] = useState(null);
   const [tareasTemas, setTareasTemas] = useState([]);
 
@@ -35,14 +34,10 @@ function TemaMaestro() {
     fetchTemas();
   }, []);
 
-  const [tareas, setTareas] = useState([]);
-  const [entregas, setEntregas] = useState([]);
-  const [tareaSeleccionada, setTareaSeleccionada] = useState("");
-
   useEffect(() => {
     fetchTemas();
   }, []);
-  
+
   useEffect(() => {
     if (temas && temas.length > 0) {
       fetchTareas();
@@ -212,7 +207,6 @@ function TemaMaestro() {
         alert("Tarea creada con exito");
         fetchTemas();
         setTareaArchivo("");
-        setTareaCalificacion("");
         setTareaFecha("");
         setTareaInstrucciones("");
         setTareaTema("");
@@ -229,6 +223,7 @@ function TemaMaestro() {
     const contenido = {
       titulo: materialTitulo,
       descripcion: materialDescripcion,
+      /* archivos: materialArchivo, tal vez esto no jala*/
       tema_id: materialTema,
     };
     console.log(contenido);
@@ -263,7 +258,28 @@ function TemaMaestro() {
       setError(err.message);
     }
   };
-  
+
+  const fetchEntregas = async (tareaId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/maestro/tareas/${tareaId}/entregas`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setEntregas(data);
+      setTareaSeleccionada(tareaId);
+    } catch (err) {
+      console.error("Error al obtener entregas:", err);
+    }
+  };
+
   const getfecha = () => {
     const now = new Date();
     now.setSeconds(0, 0);
@@ -271,8 +287,10 @@ function TemaMaestro() {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
 
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   return (
@@ -290,38 +308,39 @@ function TemaMaestro() {
           <div className="d-flex justify-content-start mb-4">
             <Link
               to={`/teacher/class/${id_clase}`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-outline-warning me-2 rounded-pill fw-semibold"
             >
               Inicio
             </Link>
             <Link
               to={`/teacher/class/${id_clase}/temas`}
-              className="btn btn-outline-primary me-2 rounded-pill fw-semibold"
+              className="btn btn-warning me-2 rounded-pill fw-semibold"
             >
               Contenido
             </Link>
           </div>
 
           <h1 className="fw-bold">Temas de la Clase {id_clase}</h1>
-          <p>Vista Maestro</p>
 
           <div className="mb-4">
             <div className="btn-group">
               <button
                 onClick={() => handleSeleccion("tema")}
-                className="btn btn-primary"
+                className="btn btn-warning fw-bold m-1 rounded"
               >
                 Crear tema
               </button>
               <button
                 onClick={() => handleSeleccion("tarea")}
-                className="btn btn-primary"
+                className="btn btn-warning fw-bold m-1 rounded"
+                disabled={!temas || temas.length === 0}
               >
                 Crear tarea
               </button>
               <button
                 onClick={() => handleSeleccion("material")}
-                className="btn btn-primary"
+                className="btn btn-warning fw-bold m-1 rounded"
+                disabled={!temas || temas.length === 0}
               >
                 Crear material
               </button>
@@ -401,6 +420,7 @@ function TemaMaestro() {
                   <select
                     className="bg-white text-dark"
                     required
+                    disabled={!temas || temas.length === 0}
                     onChange={(e) => setTareaTema(e.target.value)}
                   >
                     <option value="">Selecciona un tema</option>
@@ -414,25 +434,14 @@ function TemaMaestro() {
                 <div className="mb-3">
                   <label className="form-label">Fecha de entrega</label>
                   <input
-                    type="date"
+                    type="datetime-local"
                     className="form-control"
                     value={tareaFecha}
                     onChange={(e) => setTareaFecha(e.target.value)}
                     min={getfecha()}
                     required
                   />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Calificación</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={tareaCalificacion}
-                    onChange={(e) => setTareaCalificacion(e.target.value)}
-                    min={0}
-                    required
-                  />
-                </div>
+                </div>        
                 <div className="mb-3">
                   <label className="form-label">Subir archivo</label>
                   <input
@@ -485,6 +494,7 @@ function TemaMaestro() {
                   <select
                     className="bg-white text-dark"
                     required
+                    disabled={!temas || temas.length === 0}
                     onChange={(e) => setMaterialTema(e.target.value)}
                   >
                     <option value="">Selecciona un tema</option>
@@ -514,14 +524,14 @@ function TemaMaestro() {
           )}
 
           {error && <p className="text-danger">{error}</p>}
-        
-        <h2 className="mt-4 fw-semibold">Lista de temas</h2>
-        {error ? (
-          <p className="text-danger">Error: {error}</p>
-        ) : temas === null ? (
-          <p className="text-secondary">Todo limpio por aquí</p>
-        ) : (
-          <ul className="mt-3 list-unstyled">
+
+          <h2 className="mt-4 fw-semibold">Lista de temas</h2>
+          {error ? (
+            <p className="text-danger">Error: {error}</p>
+          ) : temas === null ? (
+            <p className="text-secondary">No se han creado temas</p>
+          ) : (
+            <ul className="mt-3 list-unstyled">
               {temas.map((tema, index) => (
                 <li
                   key={index}
@@ -541,18 +551,23 @@ function TemaMaestro() {
                         <li key={tareaIndex}>
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
-                              <strong>{tarea.titulo}</strong>: {tarea.instrucciones}
+                              <strong>{tarea.titulo}</strong>:{" "}
+                              {tarea.instrucciones}
                               <br />
                               Fecha de límite:{" "}
                               {new Date(tarea.fecha_limite).toLocaleString()}
                             </div>
 
-                            <button                        
+                            <button
                               onClick={() => {
-                                  localStorage.setItem("tarea", JSON.stringify(tarea));
-                                  navigate(`/teacher/class/${id_clase}/${tarea.id}/instrucciones`);
-                                }
-                              } 
+                                localStorage.setItem(
+                                  "tarea",
+                                  JSON.stringify(tarea)
+                                );
+                                navigate(
+                                  `/teacher/class/${id_clase}/${tarea.id}/instrucciones`
+                                );
+                              }}
                               /* onClick={() => fetchEntregas(tarea.id)} */
                               className="btn btn-sm btn-outline-success ms-4"
                             >
@@ -580,7 +595,7 @@ function TemaMaestro() {
                 </li>
               ))}
             </ul>
-        )}
+          )}
         </div>
       </div>
     </div>

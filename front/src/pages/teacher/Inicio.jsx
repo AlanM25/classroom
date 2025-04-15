@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import SidebarMaestro from "../../components/SidebarMaestro";
-import Topbar from '../../components/Topbar';
-import ClaseCard from '../../components/ClaseCard';
-import './layout.css';
-
-
+import Topbar from "../../components/Topbar";
+import ClaseCard from "../../components/ClaseCard";
+import "./layout.css";
 
 //PRUEBA--------------------------------------------------
 /* const clasesDummy = [
@@ -37,12 +35,10 @@ import './layout.css';
 
 //------------------_BORRAR_-----------------------------------------
 
-
-
 function InicioMaestro() {
   const [mostrarForm, setMostrarForm] = useState(false);
   //Los datos que ocupa para crear la clase
-  
+
   const [clases, setClases] = useState([]);
   const [nombreClase, setNombreClase] = useState("");
   const [descripcionClase, setDescripcionClase] = useState("");
@@ -50,8 +46,7 @@ function InicioMaestro() {
   const [codigo_clase, setCodigoClase] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(""); // foto perfil
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem("user");
@@ -60,7 +55,7 @@ function InicioMaestro() {
       console.log(usuarioGuardado);
     }
 
-   fetchClases();
+    fetchClases();
   }, []);
 
   //Llama a la api que crea la clase
@@ -71,19 +66,19 @@ function InicioMaestro() {
     const token = localStorage.getItem("token");
 
     const datos = {
-      "nombre":nombre,
-      "descripcion": descripcion,
-      "cuatrimestre": cuatrimestre,
-      "codigo_clase": codigo_clase,
-      "carrera_id": 1
-    }
+      nombre: nombreClase,
+      descripcion: descripcionClase,
+      cuatrimestre: cuatrimestreClase,
+      codigo_clase: codigo_clase,
+      carrera_id: 1,
+    };
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/maestro/clases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nombre: nombreClase,
@@ -109,7 +104,6 @@ function InicioMaestro() {
     setMostrarForm(false);
   };
 
-  //Lista de clases obtenidas
   const fetchClases = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -117,7 +111,7 @@ function InicioMaestro() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -126,32 +120,43 @@ function InicioMaestro() {
       }
 
       const data = await response.json();
-      //setClases(data.length > 0 ? data : null);
-      setClases(data); // De prueba borrar dsp
+      setClases(data);
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-  <div className="main-layout">
+    <div className="main-layout">
       <div className="sidebar-fixed">
-      <SidebarMaestro />
+        <SidebarMaestro />
       </div>
-      <div style={{ marginLeft: '200px', width: '100%' }}>
-      <div className="topbar-fixed">
-        <Topbar user={user} />
+      <div style={{ marginLeft: "200px", width: "100%" }}>
+        <div className="topbar-fixed">
+          <Topbar user={user} />
         </div>
 
         <div className="main-panel p-5 ">
           <h1 className="fw-bold">Inicio</h1>
           <p>Bienvenido Maestro</p>
 
-          <button className="btn btn-warning fw-bold px-4 py-2 rounded-3 shadow-sm mb-4" onClick={() => setMostrarForm(true)}>Crear Nueva Clase</button>
-
+          <button
+            className="btn btn-warning fw-bold px-4 py-2 rounded-3 shadow-sm mb-4"
+            onClick={() => setMostrarForm(true)}
+          >
+            Crear Nueva Clase
+          </button>
 
           {mostrarForm && (
-            <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ maxWidth: '600px' }}>
+            <div
+              className="bg-white rounded-4 p-4 shadow-sm mb-4"
+              style={{ maxWidth: "600px" }}
+            >
+              <button
+                onClick={() => setMostrarForm("")}
+                className="btn-close"
+                aria-label="Cerrar"
+              ></button>
               <h5 className="fw-bold mb-4">Registrar Clase</h5>
               <form onSubmit={handleCreateClass}>
                 <div className="mb-3">
@@ -209,7 +214,10 @@ function InicioMaestro() {
                 </div>
 
                 <div className="d-flex gap-3">
-                  <button type="submit" className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+                  <button
+                    type="submit"
+                    className="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm"
+                  >
                     Guardar Clase
                   </button>
                   <button
@@ -231,18 +239,21 @@ function InicioMaestro() {
             <p className="text-secondary">Aún no hay clases disponibles.</p>
           ) : (
             <div className="d-flex flex-wrap gap-4">
-         {/* {clases.map((clase, index) => ( */}
-         {(clases?.length ? clases : clases).map((clase, index) => (
-          <ClaseCard
-            key={index}
-            nombre={clase.nombre}
-            cuatrimestre={clase.cuatrimestre}
-            maestro={clase.maestro}
-            carrera={clase?.carrera?.nombre ?? 'Carrera no especificada'}
-            onClick={() => navigate(`/teacher/class/${clase.id}`)}          />
-        ))}
-          </div>
-          
+              {/* {clases.map((clase, index) => ( */}
+              {(clases?.length ? clases : clases).map((clase, index) => (
+                <ClaseCard
+                  key={index}
+                  nombre={clase.nombre}
+                  cuatrimestre={clase.cuatrimestre}
+                  maestro={clase.maestro}
+                  carrera={clase?.carrera?.nombre ?? "Carrera no especificada"}
+                  onClick={() => {
+                    localStorage.setItem("clase", JSON.stringify(clase));
+                    navigate(`/teacher/class/${clase.id}`);
+                  }}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>
