@@ -21,13 +21,13 @@ class TareaAlumno extends Model
         return $this->belongsTo(ClaseAlumno::class, 'alumno_clase');
     }
 
-    public function tarea()
+    public function tareaAlumno()
     {
-        return $this->belongsTo(Tarea::class);
+        return $this->belongsTo(TareaAlumno::class, 'tarea_id');
     }
 
     public function archivos()
     {
-        return $this->hasMany(Archivo::class, 'tareas_alumno_id');
+        return $this->hasMany(Archivo::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TareaAlumno;
 use App\Models\Tarea;
+use App\Models\Archivo;
 use Illuminate\Http\Request;
 
 class TareaAlumnoController extends Controller
@@ -37,7 +38,7 @@ class TareaAlumnoController extends Controller
     public function entregar(Request $request, $tarea_id)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:20480',
+            'archivos.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
             'alumno_clase' => 'required|exists:clases_alumnos,id',
         ]);
 
@@ -46,27 +47,25 @@ class TareaAlumnoController extends Controller
             return response()->json(['error' => 'La fecha de entrega ha vencido.'], 403);
         }
 
-        $entrega = TareaAlumno::updateOrCreate(
-            [
+        $entrega = TareaAlumno::create([
                 'tarea_id' => $tarea_id,
                 'alumno_clase' => $request->alumno_clase,
-            ],
-            [
                 'estado' => 'entregado',
                 'fecha_entrega' => now(),
-            ]
-        );
-
-        // Guardar archivo relacionado (en tabla archivos si la tienes)
-        $path = $request->file('file')->store('entregas', 'public');
-
-        \DB::table('archivos')->insert([
-            'tarea_id' => $tarea_id,
-            'tareas_alumno_id' => $entrega->id,
-            'nombre_original' => $request->file('file')->getClientOriginalName(),
-            'nombre_en_storage' => $path,
-            'fecha_creacion' => now(),
         ]);
+
+        if ($request->hasFile('archivos')) {
+            foreach ($request->file('archivos') as $archivo) {  
+                $ruta = $archivo->store('tareas', 'public');
+
+                Archivo::create([
+                    'nombre_original' => $archivo->getClientOriginalName(),
+                    'nombre_en_storage' => $ruta,
+                    'fecha_creacion' => now(),
+                    'tareas_alumno_id' => $entrega->id,     
+                ]);
+            }
+        }
 
         return response()->json(['message' => 'Tarea entregada correctamente']);
     }
