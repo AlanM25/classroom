@@ -67,7 +67,6 @@ const SidebarMaestro = () => {
         >
           <HouseFill className="me-2" /> Inicio
         </NavLink>
-
         <NavLink
           to="/teacher/tareas-calificar"
           className={({ isActive }) =>
@@ -80,7 +79,8 @@ const SidebarMaestro = () => {
         </NavLink>
 
         <div className="mt-4">
-          <h6 className="fw-bold text-uppercase">Mis clases</h6>
+          <h6 className="fw-bold">Mis clases</h6>
+          <hr />
           {clases.length === 0 ? (
             <p className="text-muted small">No hay clases asignadas</p>
           ) : (

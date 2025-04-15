@@ -92,6 +92,7 @@ function ClaseMaestro() {
       fetchAvisos();
       setContenido("");
       setArchivo(null);
+      setOpcion("");
     } catch (err) {
       setError(err.message);
     }
@@ -124,6 +125,7 @@ function ClaseMaestro() {
       //Actualizar la lista de avisos
       fetchAvisos();
       setAlumno("");
+      setOpcion("");
     } catch (err) {
       setError(err.message);
     }

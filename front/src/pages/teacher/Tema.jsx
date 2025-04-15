@@ -12,6 +12,7 @@ function TemaMaestro() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [opcion, setOpcion] = useState("");
+  const [clase, setClase] = useState(""); //La clase
 
   const [temaTitulo, setTemaTitulo] = useState("");
   const [temaDescripcion, setTemaDescripcion] = useState("");
@@ -32,6 +33,8 @@ function TemaMaestro() {
 
   useEffect(() => {
     fetchTemas();
+    const claseEntera = JSON.parse(localStorage.getItem("clase"));
+    setClase(claseEntera);
   }, []);
 
   useEffect(() => {
@@ -320,7 +323,7 @@ function TemaMaestro() {
             </Link>
           </div>
 
-          <h1 className="fw-bold">Temas de la Clase {id_clase}</h1>
+          <h1 className="fw-bold">Temas dentro de {clase.nombre}</h1>
 
           <div className="mb-4">
             <div className="btn-group">

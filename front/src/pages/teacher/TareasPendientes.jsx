@@ -117,7 +117,7 @@ function TareasPendientes() {
                         <hr />
                         <ul className="list-unstyled">
                           {tema.tareas.length === 0 ? (
-                            <p className="text-muted">no hay tareas asignadas</p>
+                            <p className="text-muted">no hay tareas creadas</p>
                           ) : (
                             tema.tareas.map((tarea, tareaIndex) => (
                               <li key={tareaIndex}>
