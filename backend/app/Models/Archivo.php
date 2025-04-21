@@ -15,6 +15,8 @@ class Archivo extends Model
         'tarea_id',
         'material_id',
         'aviso_id',
+        'tarea_alumno_id',
+
     ];
 
     public function aviso()
@@ -22,10 +24,18 @@ class Archivo extends Model
         return $this->belongsTo(Aviso::class);
     }
 
-    public function tareaAlumno()
+    public function tarea()
     {
-        return $this->belongsTo(TareaAlumno::class, 'tareas_alumno_id');
+        return $this->belongsTo(Tarea::class);
     }
 
+    public function material()
+    {
+        return $this->belongsTo(Material::class);
+    }
 
+    public function tareaAlumno()
+    {
+        return $this->belongsTo(TareaAlumno::class, 'tarea_alumno_id');
+    }
 }

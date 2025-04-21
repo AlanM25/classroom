@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClaseController;
 use App\Http\Controllers\AlumnoClaseController;
@@ -9,65 +10,62 @@ use App\Http\Controllers\TareaController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\TareaAlumnoController;
 
-
-Route::post('/login', [AuthController::class, 'login']);
+/* ─────────  AUTH  ───────── */
+Route::post('/login',  [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
+    Route::get  ('/me',    [AuthController::class, 'me']);
 
-    // Maestro
+    /* ─────────  MAESTRO  ───────── */
     Route::prefix('maestro')->group(function () {
+        /* Clases */
+        Route::get   ('/clases',            [ClaseController::class, 'index']);
+        Route::post  ('/clases',            [ClaseController::class, 'store']);
+        Route::get   ('/clases/{id}',       [ClaseController::class, 'show']);
+        Route::put   ('/clases/{id}',       [ClaseController::class, 'update']);
+        Route::delete('/clases/{id}',       [ClaseController::class, 'destroy']);
 
-        // CRUD de clases
-        Route::get('/clases', [ClaseController::class, 'index']);         // Listar clases
-        Route::post('/clases', [ClaseController::class, 'store']);        // Crear clase
-        Route::get('/clases/{id}', [ClaseController::class, 'show']);     // Ver clase
-        Route::put('/clases/{id}', [ClaseController::class, 'update']);   // Actualizar clase
-        Route::delete('/clases/{id}', [ClaseController::class, 'destroy']); // Eliminar clase
+        /* Alumnos en clase */
+        Route::post ('/clases/{clase}/agregar-alumno', [ClaseController::class, 'agregarAlumno']);
+        Route::get  ('/clases/{clase}/alumnos',        [ClaseController::class, 'alumnosPorClase']);
+        Route::get  ('/alumnos/buscar',                [AlumnoClaseController::class, 'buscar']);
 
-        // CRUD de alumnos en clases
-        Route::post('/clases/{clase_id}/agregar-alumno', [ClaseController::class, 'agregarAlumno']); // Agregar alumno a clase
-        Route::get('/clases/{clase_id}/alumnos', [ClaseController::class, 'alumnosPorClase']); // Obtener alumnos de una clase
-        Route::get('/alumnos/buscar', [AlumnoClaseController::class, 'buscar']); // Buscar alumnos
+        /* Temas & Tareas */
+        Route::post   ('/temas',                         [TemaController::class,  'store']);
+        Route::get    ('/clases/{clase}/temas',          [TemaController::class,  'index']);
+        Route::put    ('/clases/{clase}/temas/{tema}',   [TemaController::class,  'update']);
+        Route::delete ('/clases/{clase}/temas/{tema}',   [TemaController::class,  'destroy']);
 
-        // CRUD de tareas y temas
-        Route::post('/temas', [TemaController::class, 'store']); //crear tema
-        Route::get('/clases/{clase_id}/temas', [TemaController::class, 'index']); // Obtener temas de una clase
-        Route::put('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'update']); // Actualizar tema
-        Route::delete('/clases/{clase_id}/temas/{tema_id}', [TemaController::class, 'destroy']); // Eliminar tema
+        Route::post ('/tareas',                   [TareaController::class, 'store']);
+        Route::get  ('/clases/temas/{tema}/tareas', [TareaController::class, 'index']);
 
-        Route::post('/tareas', [TareaController::class, 'store']); // Crear tarea
-        Route::get('/clases/temas/{tema_id}/tareas', [TareaController::class, 'index']); // Obtener tareas de una clase
+        /* Materiales */
+        Route::post('/materiales',                     [MaterialController::class, 'store']);
+        Route::get ('/temas/{tema}/materiales',        [MaterialController::class, 'index']);
 
-        // CRUD de materiales
-        Route::post('/materiales', [MaterialController::class, 'store']);
-        Route::get('/temas/{tema_id}/materiales', [MaterialController::class, 'index']);
-
-        // Calificar tareas
-        Route::post('/tareas-alumnos/{id}/calificar', [TareaAlumnoController::class, 'calificar']);
-        Route::get('/tareas/{id}/entregas', [TareaAlumnoController::class, 'entregasPorTarea']);
+        /* Calificar y ver entregas */
+        Route::post('/tareas-alumnos/{id}/calificar',  [TareaAlumnoController::class, 'calificar']);
+        Route::get ('/tareas/{tarea}/entregas',        [TareaAlumnoController::class, 'entregasPorTarea']);
     });
 
-    // Alumno
+    /* ─────────  ALUMNO  ───────── */
     Route::prefix('alumno')->group(function () {
-        Route::get('/', [ClaseController::class, 'clasesAlumno']);
-        Route::post('/tareas/{id}/entregar', [TareaAlumnoController::class, 'entregar']);
+        Route::get ('/',                           [ClaseController::class, 'clasesAlumno']);
+
+        /* Tarea*/
+        Route::post   ('/tareas/{tarea}/entregar', [TareaAlumnoController::class, 'entregar']);
+        Route::get    ('/tareas/{tarea}/mi-entrega', [TareaAlumnoController::class, 'miEntrega']);
+        Route::delete ('/tareas/{tarea}/entrega',  [TareaAlumnoController::class, 'cancelar']);
+        Route::get  ('/tareas-pendientes', [TareaAlumnoController::class, 'pendientes']); 
+
     });
 
-    Route::post('/avisos', [AvisoController::class, 'store']);
-    Route::get('/clases/{clase_id}/avisos', [AvisoController::class, 'porClase']);
-    Route::get('/temas/{clase_id}', [TemaController::class, 'index']);
-
-    //Tareas
-    Route::get('/tareas/show/{id}', [TareaController::class, 'show']);
-    Route::get('/clases/{id}/alumnos', [ClaseController::class, 'alumnosDeClase']);
-
-
-
-
-
-
-
-
+    /* Avisos, materiales*/
+    Route::post('/avisos',                       [AvisoController::class, 'store']);
+    Route::get ('/clases/{clase}/avisos',        [AvisoController::class, 'porClase']);
+    Route::get ('/temas/{clase}',                [TemaController::class, 'index']);
+    Route::get ('/tareas/show/{tarea}',          [TareaController::class, 'show']);
+    Route::get ('/clases/{clase}/alumnos',       [ClaseController::class, 'alumnosDeClase']);
+    Route::get ('/materiales/{id}',              [MaterialController::class, 'show']);
 });

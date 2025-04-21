@@ -6,7 +6,7 @@ import ClaseCard from "../../components/ClaseCard";
 import './layout.css';
 
 function InicioAlumno() {
-  const [clases, setClases] = useState([]); //guardar la lista de clases que encuentre
+  const [clases, setClases] = useState([]); 
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); //foto de perfil
   const navigate = useNavigate(); 
@@ -22,7 +22,6 @@ function InicioAlumno() {
     fetchClases(); 
   }, []);
 
-  //Recupera la lista de clases
   const fetchClases = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -39,7 +38,7 @@ function InicioAlumno() {
       }
 
       const data = await response.json();
-      setClases(data.length > 0 ? data : null); //Si no hay clases que mejor sea nulo
+      setClases(data.length > 0 ? data : null); 
     } catch (err) {
       setError(err.message);
     }

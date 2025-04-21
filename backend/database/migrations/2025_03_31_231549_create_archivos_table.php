@@ -16,10 +16,14 @@ return new class extends Migration
             $table->string('nombre_original');
             $table->string('nombre_en_storage');
             $table->dateTime('fecha_creacion')->default(now());
+            $table->foreignId('tarea_alumno_id')          
+                ->nullable()
+                ->constrained('tareas_alumnos')
+                ->onDelete('cascade');
+
             $table->foreignId('tarea_id')->nullable()->constrained('tareas')->onDelete('cascade');
             $table->foreignId('material_id')->nullable()->constrained('materiales')->onDelete('cascade');
             $table->foreignId('aviso_id')->nullable()->constrained('avisos')->onDelete('cascade');
-            $table->foreignId('tareas_alumno_id')->nullable()->constrained('tareas_alumnos')->onDelete('cascade');
             $table->timestamps();
         });
 

@@ -7,8 +7,26 @@ use App\Models\Tema;
 use App\Models\Archivo;
 use Illuminate\Http\Request;
 
+
 class MaterialController extends Controller
 {
+
+
+    public function show($id)
+{
+    $material = Material::with('archivos', 'tema.clase.maestro')->findOrFail($id);
+
+    return response()->json([
+        'id'             => $material->id,
+        'titulo'         => $material->titulo,
+        'descripcion'    => $material->descripcion,
+        'fecha_creacion' => $material->fecha_creacion,
+        'archivos'       => $material->archivos,
+        'profesor'       => optional($material->tema->clase->maestro)->nombre ?? 'Profesor',
+    ]);
+}
+
+
     public function store(Request $request)
     {
         $request->validate([

@@ -31,7 +31,8 @@ class Usuario extends Authenticatable implements JWTSubject
 
     public function clasesComoAlumno()
     {
-        return $this->belongsToMany(Clase::class, 'clases_alumnos', 'usuario_id', 'clase_id');
+        return $this->belongsToMany(Clase::class, 'clases_alumnos', 'usuario_id', 'clase_id')
+        ->withPivot('id'); 
     }
 
     // JWT

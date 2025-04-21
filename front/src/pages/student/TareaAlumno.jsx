@@ -1,177 +1,240 @@
+
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import SidebarAlumno from "../../components/SidebarAlumno";
-import Topbar from "../../components/Topbar";
-import { openDB } from "idb";
+import { useParams, useLocation,useNavigate }      from "react-router-dom";
+import SidebarAlumno  from "../../components/SidebarAlumno";
+import Topbar         from "../../components/Topbar";
+import { openDB }     from "idb";
+import "./layout.css";
 
-function TareaAlumno() {
-  const { id_clase, id_tarea } = useParams();
-  const location = useLocation();
-  const tareaProp = location.state?.tarea;
 
-  const [user, setUser] = useState(null);
-  const [tarea, setTarea] = useState(null);
-  const [archivo, setArchivo] = useState(null);
-  const [status, setStatus] = useState("Pendiente");
+export default function TareaAlumno() {
+  const { id_tarea } = useParams();           
+  const { state }    = useLocation();
+  const navigate     = useNavigate();                                    // ← hook
+
+
+  const [user,     setUser]     = useState(null);
+  const [tarea,    setTarea]    = useState(state?.tarea || null);
+  const [archivo,  setArchivo]  = useState(null);        // archivo local a subir
+  const [entrega,  setEntrega]  = useState(null);        
+  const [loading,  setLoading]  = useState(false);
 
   useEffect(() => {
-    const usuario = localStorage.getItem("user");
-    if (usuario) setUser(JSON.parse(usuario));
-
-    if (tareaProp) {
-      setTarea(tareaProp);
-    } else {
-      fetchTareaCompleta();
-    }
-
-    cargarArchivoDesdeIndexDB();
+    const u = localStorage.getItem("user");
+    if (u) setUser(JSON.parse(u));
   }, []);
 
-  const fetchTareaCompleta = async () => {
-    const token = localStorage.getItem("token");
+  useEffect(() => { fetchTarea(); }, [id_tarea]);
+
+  const fetchTarea = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/tareas/show/${id_tarea}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) {
-        console.error("Error al obtener tarea.");
-        return;
-      }
-
-      const data = await res.json();
-      setTarea(data);
-    } catch (err) {
-      console.error("Error al cargar tarea:", err);
-    }
+      const r = await fetch(`http://127.0.0.1:8000/api/tareas/show/${id_tarea}`,
+        { headers:{ Authorization:`Bearer ${localStorage.getItem("token")}` } });
+      if (!r.ok) throw new Error();
+      setTarea(await r.json());
+    } finally { setLoading(false); }
   };
 
-  const cargarArchivoDesdeIndexDB = async () => {
-    const db = await openDB("TareasDB", 1, {
-      upgrade(db) {
-        db.createObjectStore("archivos");
-      },
-    });
-    const savedFile = await db.get("archivos", `tarea_${id_tarea}`);
-    if (savedFile) setArchivo(savedFile);
-  };
+  useEffect(() => { fetchEntrega(); }, [id_tarea]);
 
-  const guardarArchivoEnIndexDB = async (file) => {
-    const db = await openDB("TareasDB", 1, {
-      upgrade(db) {
-        db.createObjectStore("archivos");
-      },
-    });
-    await db.put("archivos", file, `tarea_${id_tarea}`);
-  };
-
-  const handleArchivoChange = (e) => {
-    const file = e.target.files[0];
-    setArchivo(file);
-    guardarArchivoEnIndexDB(file);
-  };
-
-  const handleEntregar = async () => {
-    const token = localStorage.getItem("token");
-    const alumnoClaseId = localStorage.getItem("alumno_clase_id");
-
-    if (!archivo || !alumnoClaseId) {
-      alert("debes seleccionar un archivo y tener un ID válido.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", archivo);
-    formData.append("alumno_clase", alumnoClaseId);
+  const fetchEntrega = async () => {
+    const alumnoClase = localStorage.getItem("alumno_clase_id");
+    if (!alumnoClase) return;
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/alumno/tareas/${id_tarea}/entregar`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData
-          });
+      const r = await fetch(
+        `http://127.0.0.1:8000/api/alumno/tareas/${id_tarea}/mi-entrega?alumno_clase=${alumnoClase}`,
+        { headers:{ Authorization:`Bearer ${localStorage.getItem("token")}` } }
+      );
+      if (r.status === 204) { setEntrega(null); return; }
+      if (!r.ok) throw new Error();
+      setEntrega(await r.json());
+    } catch { /* sin registro */ }
+  };
 
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Error al entregar tarea:", text);
-        alert("❌ Error al entregar tarea.");
-        return;
-      }
+  /* ─────────  indexedDB  ───────── */
+  useEffect(() => { loadLocal(); }, [id_tarea]);
 
-      alert(" Tarea entregada correctamente.");
-      setStatus("Entregado");
-    } catch (err) {
-      console.error("Error al entregar:", err);
-      alert("No se pudo entregar la tarea.");
+  const loadLocal = async () => {
+    const db = await openDB("TareasDB", 1,
+                { upgrade: db => db.createObjectStore("archivos") });
+    const f  = await db.get("archivos", `tarea_${id_tarea}`);
+    if (f) setArchivo(f);
+  };
+  const saveLocal = async f => {
+    const db = await openDB("TareasDB", 1,
+                { upgrade: db => db.createObjectStore("archivos") });
+    await db.put("archivos", f, `tarea_${id_tarea}`);
+  };
+
+  const onSelect = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setArchivo(f);
+    saveLocal(f);
+  };
+
+  const enviar = async () => {
+    const alumnoClase = localStorage.getItem("alumno_clase_id");
+    if (!archivo)     return alert("Selecciona un archivo");
+    if (!alumnoClase) return alert(" No se encontró tu clase ");
+
+    const fd = new FormData();
+    fd.append("archivo",       archivo);
+    fd.append("alumno_clase",  alumnoClase);
+
+    try {
+      const r = await fetch(
+        `http://127.0.0.1:8000/api/alumno/tareas/${id_tarea}/entregar`,
+        { method:"POST",
+          headers:{ Authorization:`Bearer ${localStorage.getItem("token")}` },
+          body:fd }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      alert(" Tarea entregada");
+      await fetchEntrega();           // refrescamos estado
+    } catch (e) { alert(` ${e.message}`); }
+  };
+
+  const cancelar = async () => {
+    const alumnoClase = localStorage.getItem("alumno_clase_id");
+    if (!window.confirm("¿Quitar la entrega?")) return;
+
+    try {
+      const r = await fetch(
+        `http://127.0.0.1:8000/api/alumno/tareas/${id_tarea}/entrega`,
+        {
+          method :"DELETE",
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem("token")}`,
+            "Content-Type":"application/json"
+          },
+          body: JSON.stringify({ alumno_clase: alumnoClase })
+        }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      alert("Entrega cancelada");
+      setEntrega(null);
+      setArchivo(null);
+      saveLocal(null);
+    } catch (e) { alert(` ${e.message}`); }
+  };
+
+
+
+  const volver = () => {
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else if (tarea?.clase_id) {
+      navigate(`/alumno/clase/${tarea.clase_id}`);
+    } else {
+      navigate("/alumno");
     }
   };
 
-  const fechaFormateada = tarea?.fecha_limite
-    ? new Date(tarea.fecha_limite).toLocaleDateString("es-MX", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "Sin fecha";
+  if (loading || !tarea)
+    return <p className="text-center mt-5">Cargando…</p>;
+
+  const fLim  = new Date(tarea.fecha_limite  ).toLocaleDateString("es-MX");
+  const fCrea = new Date(tarea.fecha_creacion).toLocaleDateString("es-MX");
 
   return (
     <div className="main-layout">
-      <div className="sidebar-fixed">
-        <SidebarAlumno />
-      </div>
-      <div style={{ marginLeft: "200px", width: "100%" }}>
-        <div className="topbar-fixed">
-          <Topbar user={user} />
-        </div>
+      <div className="sidebar-fixed"><SidebarAlumno/></div>
 
-        <div className="main-panel p-5 d-flex justify-content-between flex-wrap">
-          {/* Panel Izquierdo */}
-          <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ flex: 1, marginRight: "30px" }}>
-            <h1 className="fw-bold">{tarea?.titulo ?? "Sin título"}</h1>
-            <p className="text-muted mb-1"><strong>Fecha de entrega:</strong> {fechaFormateada}</p>
-            <p className="text-muted"><strong>Profesor:</strong> {tarea?.profesor ?? "Profesor"}</p>
-            <p>{tarea?.instrucciones}</p>
+      <div style={{marginLeft:200,width:"calc(100% - 200px)"}}>
+        <div className="topbar-fixed"><Topbar user={user}/></div>
 
-            {tarea?.archivos?.length > 0 && (
-              <div className="mt-3">
-                <strong className="d-block">Archivos adjuntos:</strong>
+        <div className="main-panel p-5 d-flex flex-wrap justify-content-between">
+        <div className="w-100 d-flex justify-content-between align-items-center mb-4">
+            <h2 className="fw-bold m-0">{tarea.titulo}</h2>
+            <button
+              type="button"
+              className="btn btn-outline-primary rounded-pill"
+              onClick={volver}
+            >
+              Volver
+            </button>
+          </div>
+
+          {/* ─────  Información de la tarea  ───── */}
+          <article className="bg-white rounded-4 p-4 shadow-sm mb-4"
+                   style={{flex:1,marginRight:30}}>
+            <h1 className="fw-bold">{tarea.titulo}</h1>
+            <p><b>Profesor:</b> {tarea.profesor}</p>
+            <p><b>Publicación:</b> {fCrea}</p>
+            <p><b>Límite:</b> {fLim}</p>
+            <p>{tarea.instrucciones}</p>
+
+            {!!tarea.archivos?.length && (
+              <>
+                <h6>Archivos del profesor:</h6>
                 <ul>
-                  {tarea.archivos.map((a) => (
+                  {tarea.archivos.map(a=>(
                     <li key={a.id}>
-                      <a href={`http://127.0.0.1:8000/storage/${a.nombre_en_storage}`} target="_blank" rel="noreferrer">
+                      <a href={`http://127.0.0.1:8000/storage/${a.nombre_en_storage}`}
+                         target="_blank" rel="noreferrer">
                         {a.nombre_original}
                       </a>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </>
             )}
-          </div>
+          </article>
 
-          {/* Panel Derecho */}
-          <div className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{ width: "300px" }}>
-            <h5 className="fw-bold">Tu trabajo <span className="text-warning float-end">{status}</span></h5>
-            <input
-              type="file"
-              className="form-control mt-3"
-              onChange={handleArchivoChange}
-            />
-            {archivo && (
-              <div className="mt-2 small text-success">
-                Archivo seleccionado: <strong>{archivo.name}</strong>
-              </div>
+          {/* ─────  Panel de entrega  ───── */}
+          <aside className="bg-white rounded-4 p-4 shadow-sm mb-4" style={{width:320}}>
+            <h5 className="fw-bold">
+              Tu trabajo
+              <span className="float-end text-warning">
+                {entrega?.estado ?? "pendiente"}
+              </span>
+            </h5>
+
+            {/*  CALIFICADA  */}
+            {entrega?.estado === "calificado" && (
+              <>
+                <p className="mt-3 mb-0">
+                  <b>Calificación:</b> {entrega.calificacion}/100
+                </p>
+                <button className="btn btn-secondary w-100 fw-bold mt-3" disabled>
+                  Entrega cerrada
+                </button>
+              </>
             )}
-            <button
-              onClick={handleEntregar}
-              className="btn btn-warning w-100 mt-3 fw-bold"
-            >
-              Marcar como completado
-            </button>
-          </div>
+
+            {/*  ENTREGADA  */}
+            {entrega?.estado === "entregado" && (
+              <>
+                <p className="small mt-3">
+                  Archivo:&nbsp;
+                  <b>{entrega.archivos?.[0]?.nombre_original ?? "—"}</b>
+                </p>
+                <button className="btn btn-danger w-100 fw-bold mt-2"
+                        onClick={cancelar}>
+                  Cancelar entrega
+                </button>
+              </>
+            )}
+
+            {/*  PENDIENTE  */}
+            {!entrega && (
+              <>
+                <input type="file" className="form-control mt-3"
+                       onChange={onSelect}/>
+                {archivo &&
+                  <p className="small mt-2">Archivo: <b>{archivo.name}</b></p>}
+                <button className="btn btn-warning w-100 fw-bold mt-2"
+                        onClick={enviar}>
+                  Marcar como completado
+                </button>
+              </>
+            )}
+          </aside>
         </div>
       </div>
     </div>
   );
 }
-
-export default TareaAlumno;

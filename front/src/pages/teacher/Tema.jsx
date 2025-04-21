@@ -221,46 +221,39 @@ function TemaMaestro() {
     }
   };
 
-  const handleSubmitMaterial = async (e) => {
-    e.preventDefault();
-    const contenido = {
-      titulo: materialTitulo,
-      descripcion: materialDescripcion,
-      /* archivos: materialArchivo, tal vez esto no jala*/
-      tema_id: materialTema,
-    };
-    console.log(contenido);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/maestro/materiales`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(contenido),
+  
+      const handleSubmitMaterial = async (e) => {
+        e.preventDefault();
+      
+        // 1️⃣  construimos FormData
+        const fd = new FormData();
+        fd.append('titulo',       materialTitulo);
+        fd.append('descripcion',  materialDescripcion);
+        fd.append('tema_id',      materialTema);
+        if (materialArchivo) fd.append('archivos[]', materialArchivo);   // ← nombre plural
+      
+        try {
+          const token = localStorage.getItem('token');
+          const r = await fetch('http://127.0.0.1:8000/api/maestro/materiales', {
+            method : 'POST',
+            headers: { Authorization: `Bearer ${token}` },               // NO ‘Content‑Type’ aquí
+            body   : fd,
+          });
+      
+          if (!r.ok) throw new Error('Error al agregar el material');
+      
+          alert('Material creado con éxito');
+          setMaterialTitulo('');
+          setMaterialDescripcion('');
+          setMaterialTema('');
+          setMaterialArchivo(null);
+          setOpcion('');
+          fetchTemas();                                                  // refrescamos listas
+        } catch (err) {
+          setError(err.message);
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Error al agregar el material");
-      } else {
-        //Actualizar la lista de materiales
-        alert("Material creado con exito");
-        setMaterialTitulo("");
-        setMaterialDescripcion("");
-        setMaterialTema("");
-        setMaterialArchivo("");
-        setOpcion("");
-        fetchTemas();
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+      };
+      
 
   const fetchEntregas = async (tareaId) => {
     const token = localStorage.getItem("token");
